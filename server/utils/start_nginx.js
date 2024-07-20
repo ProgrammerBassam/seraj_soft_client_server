@@ -2,25 +2,33 @@ const { exec } = require('child_process');
 const open = require('open');
 const PORT = 65531; // Replace with your actual port if different
 
+// Function to check if Nginx is running
 function checkNginxStatus(callback) {
-    exec('systemctl is-active nginx', (error, stdout) => {
+    exec('tasklist /FI "IMAGENAME eq nginx.exe"', (error, stdout, stderr) => {
         if (error) {
-            console.error('Error checking Nginx status:', error);
+            console.error(`Error checking Nginx status: ${stderr}`);
             callback(false);
             return;
         }
-        callback(stdout.trim() === 'active');
+
+        // Check if nginx.exe is in the task list
+        if (stdout.includes('nginx.exe')) {
+            console.log('Nginx is running.');
+            callback(true);
+        } else {
+            console.log('Nginx is not running.');
+            callback(false);
+        }
     });
 }
 
+// Function to start Nginx
 function startNginx() {
-    exec('sudo systemctl start nginx', (error) => {
+    exec('start "" "C:\\path\\to\\nginx.exe"', (error, stdout, stderr) => {
         if (error) {
-            console.error('Error starting Nginx:', error);
-            // Fallback: Open the local server if Nginx fails to start
+            console.error(`Error starting Nginx: ${stderr}`);
             open(`http://localhost:${PORT}`);
         } else {
-            // Check if Nginx is successfully started and open the correct URL
             checkNginxStatus((isRunning) => {
                 if (isRunning) {
                     open('http://seraj-soft.com');
@@ -32,12 +40,10 @@ function startNginx() {
     });
 }
 
+
 checkNginxStatus((isRunning) => {
     if (!isRunning) {
         // Start Nginx if it is not running
         startNginx();
-    } else {
-        // If Nginx is running, open the desired URL
-        open('http://seraj-soft.com');
     }
 });
