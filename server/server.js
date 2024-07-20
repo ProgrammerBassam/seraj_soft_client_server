@@ -6,6 +6,7 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const logger = require('morgan');
+const myLogger = require('./utils/logger.js');
 const { Server } = require('socket.io');
 const open = require('open');
 const helmet = require('helmet');
@@ -113,11 +114,35 @@ process.on('SIGINT', () => {
 });
 
 process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
-    process.exit(1);
+    myLogger.logError('خطأ غير متوقع ' + err)
+
+    // Capture the exception and send it to Sentry
+    Sentry.captureException(err);
+
+    // Optionally, you can delay the process exit to ensure the error is sent to Sentry
+    Sentry.flush(2000).then(() => {
+        // Do not exit the process to keep the server running
+        myLogger.logSuccess('تم إرسال الخطأ إلينا')
+    }).catch((flushErr) => {
+        console.error('Error in Sentry flush', flushErr);
+        myLogger.logError('خطأ غير متوقع عند إرسال الخطأ إلينا ' + flushErr)
+        // Continue execution even if flushing to Sentry fails
+    });
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-    process.exit(1);
+    myLogger.logError('خطأ غير متوقع ' + reason + 'عند ' + promise)
+
+    // Capture the exception and send it to Sentry
+    Sentry.captureException(err);
+
+    // Optionally, you can delay the process exit to ensure the error is sent to Sentry
+    Sentry.flush(2000).then(() => {
+        // Do not exit the process to keep the server running
+        myLogger.logSuccess('تم إرسال الخطأ إلينا')
+    }).catch((flushErr) => {
+        console.error('Error in Sentry flush', flushErr);
+        myLogger.logError('خطأ غير متوقع عند إرسال الخطأ إلينا ' + flushErr)
+        // Continue execution even if flushing to Sentry fails
+    });
 });
