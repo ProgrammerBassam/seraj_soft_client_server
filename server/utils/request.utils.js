@@ -66,11 +66,21 @@ eventEmitter.on('getProfileData', async () => {
             const onesignalToken = clientData['onesignal_token']
             await saveInCache({ key: "onesignal_token", value: onesignalToken ?? "" })
 
+            const serverIp = clientData['server_ip']
+            await saveInCache({ key: "server_ip", value: serverIp ?? "" })
+
+            const encryptMacAddress = clientData['encrypt_mac_address']
+            await saveInCache({ key: "encrypt_mac_address", value: encryptMacAddress ?? "" })
+
             await executePost("http://localhost:65531/api/v1/auth/update-ip", {})
 
             eventEmitter.emit('emitCustom', { key: 'smsService', value: canUserSms ? 'مشترك' : 'غير مشترك' });
             eventEmitter.emit('emitCustom', { key: 'whatsappService', value: canUseWhatsapp ? 'مشترك' : 'غير مشترك' });
             eventEmitter.emit('emitCustom', { key: 'apiService', value: canUseApi ? 'مشترك' : 'غير مشترك' });
+
+            if (canUseApi) {
+                eventEmitter.emit('initServerSocket');
+            }
         } else {
             await saveInCache({ key: 'is_registerd', value: false })
         }

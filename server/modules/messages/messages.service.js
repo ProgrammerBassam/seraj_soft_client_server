@@ -1,5 +1,6 @@
 const { sendMessage } = require('../../utils/whatssapp.service')
 const { executePost } = require('../../utils/request.utils')
+const logger = require('../../utils/logger.js')
 
 const SendSms = async ({ title, body, token }) => {
     try {
