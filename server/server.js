@@ -15,6 +15,7 @@ const cors = require('cors');
 const { getValue } = require('./utils/cache.services');
 require('./utils/check_ip_cron');
 require('./utils/server_socket.js');
+require('./utils/check_net_speed.js');
 const { initializeWhatsappService, updateQrs } = require('./utils/whatssapp.service');
 const { initSocket } = require('./utils/local_socket');
 const response = require('./utils/responses');

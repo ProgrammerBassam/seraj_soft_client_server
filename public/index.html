@@ -187,6 +187,16 @@
                     <label class="title">خدمة إستعلام البيانات من التطبيق:</label>
                     <label class="value api-service" id="apiService">جاري البحث ..</label>
                 </div>
+
+                <div class="data-row">
+                    <label class="title">هل يمكن الإتصال عن طريق الإنترنت؟</label>
+                    <label class="value is-connected-to-server" id="isConnectedToServer">جاري البحث ..</label>
+                </div>
+
+                <div class="data-row">
+                    <label class="title">سرعة الإنترنت </label>
+                    <label class="value internet-status" id="internetStatus">جاري البحث ..</label>
+                </div>
             </div>
 
             <div class="log-section" id="logSection">
@@ -222,6 +232,14 @@
 
         socket.on('apiService', (apiService) => {
             document.getElementById('apiService').textContent = apiService;
+        });
+
+        socket.on('isConnectedToServer', (isConnectedToServer) => {
+            document.getElementById('isConnectedToServer').textContent = isConnectedToServer;
+        });
+
+        socket.on('internetStatus', (internetStatus) => {
+            document.getElementById('internetStatus').textContent = internetStatus;
         });
 
         socket.on('log', (log) => {

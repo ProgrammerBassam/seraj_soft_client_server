@@ -21,6 +21,8 @@ eventEmitter.on('initServerSocket', async () => {
             pageResponse = "page-response";
 
             openSocket();
+        } else {
+            eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'نعم' });
         }
 
     } catch (error) {
@@ -85,6 +87,7 @@ function openSocket() {
 
     socket.on('connect', () => {
 
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'نعم' });
         logger.logSuccess('تم الإتصال بنجاح مع سرفرات سراج سوفت')
 
         const engine = socket.io.engine;
@@ -114,6 +117,7 @@ function openSocket() {
         engine.on("close", (reason) => {
             // called when the underlying connection is closed
             logger.logError('تم قطع الإتصال مع سرفرات سراج سوفت بسبب ' + reason)
+            eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
 
             socket.io.opts.query = { userId: macAddress }
         });
@@ -123,6 +127,7 @@ function openSocket() {
     socket.on('disconnect', (reason) => {
         socket.io.opts.query = { userId: macAddress }
         logger.logError('تم قطع الإتصال مع سرفرات سراج سوفت بسبب ' + reason)
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
         if (reason === 'io server disconnect') {
             socket.connect()
         }
@@ -131,26 +136,31 @@ function openSocket() {
     socket.on('connect_timeout', () => {
         socket.io.opts.query = { userId: macAddress }
         logger.logError('الإتصال تم قطعه بسبب تجاوز الوقت المحدد')
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
     });
 
     socket.on('reconnect_attempt', () => {
         logger.logInfo(`محاولة إعادة الإتصال مع سرفر سراج سوفت (المحاولة  ${attemptNumber} ...)`)
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
         socket.io.opts.query = { userId: macAddress }
     });
 
     socket.on('reconnect', () => {
         logger.logInfo('إعادة الإتصال مع سرفرات سراج')
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
 
         socket.io.opts.query = { userId: macAddress }
     });
 
     socket.on('reconnect_attempt', (attempt) => {
         logger.logInfo(`محاولة إعادة الإتصال مع سرفر سراج سوفت (المحاولة  ${attempt} ...)`)
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
         socket.io.opts.query = { userId: macAddress }
     });
 
     socket.on('reconnect_error', (error) => {
         socket.io.opts.query = { userId: macAddress }
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
         if (!socket.active) {
             console.error('خطأ عند محاولة الإتصال مع سرفرات سراج ' + error.message);
         }
@@ -159,10 +169,12 @@ function openSocket() {
     socket.on('reconnect_failed', () => {
         socket.io.opts.query = { userId: macAddress }
         console.error('تجاوز عدد المرات المسموح بها للإتصال بسرفرات سراج');
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
     });
 
     socket.on("connect_error", (err) => {
         console.error('خطأ عند محاولة الإتصال مع سرفرات سراج ' + err.message);
+        eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
         socket.io.opts.query = { userId: macAddress }
     });
 
