@@ -34,7 +34,7 @@ function getMAC() {
             }
 
             // Join MAC addresses with "-"
-            const macString = macAddresses.join('-');
+            const macString = macAddresses[0]
 
             // Encode macString using Base64
             const encodedString = Buffer.from(macString).toString('base64');

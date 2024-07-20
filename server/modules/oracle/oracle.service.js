@@ -1,4 +1,4 @@
-/*const oracledb = require('oracledb')
+const oracledb = require('oracledb')
 const iconv = require('iconv-lite')
 const { getConfig } = require('../../database/dbconfig')
 const { saveInCache, getValue } = require('../../utils/cache.services')
@@ -187,4 +187,4 @@ const GetReportByAccNo = async ({ acc_no, start_date, end_date }) => {
     return result;
 };
 
-module.exports = { SearchChartAcc, GetReportByAccNo }*/
+module.exports = { SearchChartAcc, GetReportByAccNo }

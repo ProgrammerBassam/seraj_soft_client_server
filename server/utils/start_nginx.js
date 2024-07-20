@@ -1,49 +1,38 @@
 const { exec } = require('child_process');
-const open = require('open');
-const PORT = 65531; // Replace with your actual port if different
+const { execFile } = require('child_process');
+
 
 // Function to check if Nginx is running
-function checkNginxStatus(callback) {
+function checkNginxStatus() {
     exec('tasklist /FI "IMAGENAME eq nginx.exe"', (error, stdout, stderr) => {
         if (error) {
             console.error(`Error checking Nginx status: ${stderr}`);
-            callback(false);
-            return;
+            startNgnix()
         }
 
         // Check if nginx.exe is in the task list
         if (stdout.includes('nginx.exe')) {
             console.log('Nginx is running.');
-            callback(true);
         } else {
             console.log('Nginx is not running.');
-            callback(false);
+            startNgnix()
         }
     });
 }
 
-// Function to start Nginx
-function startNginx() {
-    exec('start "" "C:\\path\\to\\nginx.exe"', (error, stdout, stderr) => {
+// Path to the batch file (assuming it's in the same folder)
+const BATCH_FILE_PATH = 'C:\\Users\\baxco\\Downloads\\nginx-1.26.1\\nginx-1.26.1\\startNginx.bat';
+
+function startNgnix() {
+    execFile(BATCH_FILE_PATH, (error, stdout, stderr) => {
         if (error) {
-            console.error(`Error starting Nginx: ${stderr}`);
-            open(`http://localhost:${PORT}`);
-        } else {
-            checkNginxStatus((isRunning) => {
-                if (isRunning) {
-                    open('http://seraj-soft.com');
-                } else {
-                    open(`http://localhost:${PORT}`);
-                }
-            });
+            console.error(`Error executing batch file: ${stderr}`);
+            return;
         }
+        console.log(`Batch file output: ${stdout}`);
     });
+    
 }
 
-
-checkNginxStatus((isRunning) => {
-    if (!isRunning) {
-        // Start Nginx if it is not running
-        startNginx();
-    }
-});
+// Export the function to be used in the batch script
+checkNginxStatus()
