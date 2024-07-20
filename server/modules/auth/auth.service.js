@@ -30,5 +30,19 @@ const UpdateIpAddress = async () => {
     }
 }
 
+const GetFeatures = async () => {
+    try {
 
-module.exports = { GetClientData, UpdateIpAddress }
+        const serverVersion = "1.0.0"
+
+        const params = { server_version: serverVersion }
+        const result = await executePost("http://localhost:3005/api/v1/server/get-features", params)
+        return result.body
+
+    } catch (error) {
+        throw error
+    }
+}
+
+
+module.exports = { GetClientData, UpdateIpAddress, GetFeatures }

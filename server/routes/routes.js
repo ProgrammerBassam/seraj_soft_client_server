@@ -15,7 +15,7 @@ const router = express.Router()
 
 router.use('/auth', authRouter)
 router.use('/messages', messagesRouter)
-router.use('/oracle', authentication, oracleRouter)
+//router.use('/oracle', authentication, oracleRouter)
 // router.use('/auth', authRouter)
 // router.use('/settings', settingsRouter)
 // router.use('/check', authentication, checkingRouter)

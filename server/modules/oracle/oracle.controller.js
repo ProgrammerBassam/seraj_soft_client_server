@@ -1,4 +1,4 @@
-const service = require('./oracle.service.js')
+/*const service = require('./oracle.service.js')
 const response = require('../../utils/responses.js')
 const logger = require('../../utils/logger.js')
 
@@ -46,4 +46,4 @@ const GetReportByAccNo = async (req, res) => {
     }
 }
 
-module.exports = { SearchChartAcc, GetReportByAccNo }
+module.exports = { SearchChartAcc, GetReportByAccNo }*/

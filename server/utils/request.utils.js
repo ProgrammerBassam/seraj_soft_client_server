@@ -3,6 +3,19 @@ const eventEmitter = require('./events');
 const logger = require('./logger')
 const { saveInCache } = require('./cache.services')
 
+function executeGet(url) {
+    return new Promise((resolve, reject) => {
+        superagent
+            .get(url)
+            .end((err, response) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(response);
+                }
+            });
+    });
+}
 
 
 function executePost(url, params) {
@@ -81,6 +94,8 @@ eventEmitter.on('getProfileData', async () => {
             if (canUseApi) {
                 eventEmitter.emit('initServerSocket');
             }
+
+            await executeGet("http://localhost:65531/api/v1/auth/get-features")
         } else {
             await saveInCache({ key: 'is_registerd', value: false })
         }
@@ -91,4 +106,4 @@ eventEmitter.on('getProfileData', async () => {
 });
 
 
-module.exports = { executePost }
+module.exports = { executePost, executeGet }

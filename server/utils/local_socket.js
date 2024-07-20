@@ -17,6 +17,7 @@ async function initSocket(server) {
             await saveInCache({ key: "mac_address", value: macAddress });
             eventEmitter.emit('getProfileData');
         }).catch(error => {
+            logger.logError('خطأ عند البحث عن العنوان ' + error)
             socket.emit('macAddress', 'خطأ عند البحث عن العنوان');
         });
 
@@ -24,7 +25,7 @@ async function initSocket(server) {
         socket.emit('ipAddress', ipAddress);
 
         socket.on('disconnect', () => {
-            console.log('Client disconnected');
+            logger.logError('تم قطع الإتصال الداخلي')
         });
     });
 

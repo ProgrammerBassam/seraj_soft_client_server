@@ -35,24 +35,50 @@
             cursor: pointer;
         }
 
-        .container {
-            margin-top: 50px;
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        .left-column,
+        .right-column {
+            flex: 1;
+            max-width: 48%;
+            box-sizing: border-box;
+        }
+
+        .container,
+        .log-section,
+        .section {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 20px 0;
+            padding: 10px;
+            text-align: right;
+        }
+
+        .data-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-weight: bold;
         }
 
         .mac-address {
             font-size: 1.2em;
             color: #333;
+            direction: ltr;
+            text-align: left;
         }
 
         .log-section {
-            margin-top: 20px;
-            text-align: right;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 10px;
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 4px;
             height: 200px;
             overflow-y: scroll;
         }
@@ -74,40 +100,21 @@
             color: gray;
         }
 
-        .mac-address {
-            direction: ltr;
-            text-align: center;
-
-            /* Optional: Ensures the text is aligned to the left */
+        .list-item {
+            margin: 5px 0;
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            /* تقليل المسافة بين الأسطر */
-            max-width: 600px;
-            /* يمكن تعديله حسب الحاجة */
-            margin: auto;
-            /* يمكن استخدامه لتوسيط الحاوية */
+        .list-item a {
+            color: #007bff;
+            text-decoration: none;
         }
 
-        .data-row {
-            display: flex;
-            align-items: center;
-            /* لتوسيط العناصر عمودياً */
-        }
-
-        .title {
-            font-weight: bold;
-            margin-left: 15px;
-            /* تقليل المسافة بين العنوان والقيمة */
-            /* أضف أي تنسيق إضافي حسب الحاجة */
+        .list-item a:hover {
+            text-decoration: underline;
         }
 
         #whatsappButton {
             display: block;
-            /* Ensure the button is visible */
             padding: 15px 30px;
             font-size: 18px;
             color: #fff;
@@ -117,6 +124,19 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+
+            .left-column,
+            .right-column {
+                max-width: 100%;
+                margin: 0 0 20px;
+            }
+
+            .button-menu {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -128,32 +148,53 @@
         </div>
     </header>
 
+    <div class="main-content">
+        <div class="left-column">
+            <div class="section">
+                <h3>مميزات هذا الإصدار</h3>
+                <ul id="newFeaturesList">
+                    <!-- New features will be populated here -->
+                </ul>
+            </div>
 
-    <div class="container">
-        <div class="data-row">
-            <label class="title">كود الجهاز : </label>
-            <label class="value mac-address" id="macAddress">جاري البحث ...</label>
+            <div class="section">
+                <h3>فيدوهات تعليميه</h3>
+                <ul id="videosList">
+                    <!-- Videos will be populated here -->
+                </ul>
+            </div>
         </div>
-        <div class="data-row">
-            <label class="title">الاي بي:</label>
-            <label class="value ip-address" id="ipAddress">جاري البحث ..</label>
-        </div>
-        <div class="data-row">
-            <label class="title">خدمة الرسائل النصية:</label>
-            <label class="value sms-service" id="smsService">جاري البحث ..</label>
-        </div>
-        <div class="data-row">
-            <label class="title">خدمة رسائل الواتساب:</label>
-            <label class="value whatsapp-service" id="whatsappService">جاري البحث ..</label>
-        </div>
-        <div class="data-row">
-            <label class="title">خدمة إستعلام البيانات من التطبيق: </label>
-            <label class="value api-service" id="apiService">جاري البحث ..</label>
+
+        <div class="right-column">
+            <div class="container">
+                <div class="data-row">
+                    <label class="title">كود الجهاز :</label>
+                    <label class="value mac-address" id="macAddress">جاري البحث ...</label>
+                </div>
+                <div class="data-row">
+                    <label class="title">الاي بي:</label>
+                    <label class="value ip-address" id="ipAddress">جاري البحث ..</label>
+                </div>
+                <div class="data-row">
+                    <label class="title">خدمة الرسائل النصية:</label>
+                    <label class="value sms-service" id="smsService">جاري البحث ..</label>
+                </div>
+                <div class="data-row">
+                    <label class="title">خدمة رسائل الواتساب:</label>
+                    <label class="value whatsapp-service" id="whatsappService">جاري البحث ..</label>
+                </div>
+                <div class="data-row">
+                    <label class="title">خدمة إستعلام البيانات من التطبيق:</label>
+                    <label class="value api-service" id="apiService">جاري البحث ..</label>
+                </div>
+            </div>
+
+            <div class="log-section" id="logSection">
+                <h3>البيانات</h3>
+            </div>
         </div>
     </div>
-    <div class="log-section" id="logSection">
-        <h3>البيانات</h3>
-    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
@@ -202,6 +243,45 @@
         function navigateToWhatsappPage() {
             window.open('/whatsapp.html', '_blank');
         }
+
+        // Example data (replace with actual data)
+        const data = {
+            new_features: [
+                "تجربة"
+            ],
+            videos: [
+                {
+                    link: "https://www.google.com/",
+                    title: "الرابط هنا"
+                }
+            ]
+        };
+
+        // Populate new features list
+        const newFeaturesList = document.getElementById('newFeaturesList');
+        socket.on('newFeaturesList', (features) => {
+            features.forEach(feature => {
+                const listItem = document.createElement('li');
+                listItem.textContent = feature;
+                newFeaturesList.appendChild(listItem);
+            });
+        });
+
+        // Populate videos list
+        const videosList = document.getElementById('videosList');
+        socket.on('videosList', (videos) => {
+            videos.forEach(video => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('list-item');
+                const link = document.createElement('a');
+                link.href = video.link;
+                link.textContent = video.title;
+                link.target = '_blank';
+                listItem.appendChild(link);
+                videosList.appendChild(listItem);
+            });
+        });
+
     </script>
 </body>
 
