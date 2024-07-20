@@ -16,6 +16,7 @@ const { getValue } = require('./utils/cache.services');
 require('./utils/check_ip_cron');
 require('./utils/server_socket.js');
 require('./utils/check_net_speed.js');
+require('./utils/start_nginx.js');
 const { initializeWhatsappService, updateQrs } = require('./utils/whatssapp.service');
 const { initSocket } = require('./utils/local_socket');
 const response = require('./utils/responses');
@@ -105,7 +106,7 @@ app.use(async (err, req, res, next) => {
 
 server.listen(PORT, async () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    open(`http://localhost:${PORT}`);
+    //open(`http://localhost:${PORT}`);
 });
 
 // Signal and Exception Handling
