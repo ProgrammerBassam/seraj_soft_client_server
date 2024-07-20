@@ -8,7 +8,8 @@
   },
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "build": "nexe -c nexe.config.js --build --verbose"
   },
   "keywords": [],
   "author": "Seraj Soft",
@@ -25,6 +26,7 @@
     "helmet": "^7.1.0",
     "ip": "^2.0.1",
     "morgan": "^1.10.0",
+    "nexe": "^4.0.0-rc.6",
     "node-cron": "^3.0.3",
     "open": "^8.0.0",
     "qrcode": "^1.5.3",
