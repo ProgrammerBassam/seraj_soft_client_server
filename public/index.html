@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام سراج سوفت</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            direction: rtl;
+        }
+
+        header {
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .button-menu {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .button-menu button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .mac-address {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .log-section {
+            margin-top: 20px;
+            text-align: right;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+
+        .log-message {
+            padding: 5px;
+            direction: rtl;
+        }
+
+        .log-success {
+            color: green;
+        }
+
+        .log-error {
+            color: red;
+        }
+
+        .log-info {
+            color: gray;
+        }
+
+        .mac-address {
+            direction: ltr;
+            text-align: center;
+
+            /* Optional: Ensures the text is aligned to the left */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            /* تقليل المسافة بين الأسطر */
+            max-width: 600px;
+            /* يمكن تعديله حسب الحاجة */
+            margin: auto;
+            /* يمكن استخدامه لتوسيط الحاوية */
+        }
+
+        .data-row {
+            display: flex;
+            align-items: center;
+            /* لتوسيط العناصر عمودياً */
+        }
+
+        .title {
+            font-weight: bold;
+            margin-left: 15px;
+            /* تقليل المسافة بين العنوان والقيمة */
+            /* أضف أي تنسيق إضافي حسب الحاجة */
+        }
+
+        #whatsappButton {
+            display: block;
+            /* Ensure the button is visible */
+            padding: 15px 30px;
+            font-size: 18px;
+            color: #fff;
+            background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <header>نظام سراج سوفت
+        <div class="button-menu">
+            <button id="whatsappButton" onclick="navigateToWhatsappPage()">حالة خدمة الواتساب</button>
+        </div>
+    </header>
+
+
+    <div class="container">
+        <div class="data-row">
+            <label class="title">كود الجهاز : </label>
+            <label class="value mac-address" id="macAddress">جاري البحث ...</label>
+        </div>
+        <div class="data-row">
+            <label class="title">الاي بي:</label>
+            <label class="value ip-address" id="ipAddress">جاري البحث ..</label>
+        </div>
+        <div class="data-row">
+            <label class="title">خدمة الرسائل النصية:</label>
+            <label class="value sms-service" id="smsService">جاري البحث ..</label>
+        </div>
+        <div class="data-row">
+            <label class="title">خدمة رسائل الواتساب:</label>
+            <label class="value whatsapp-service" id="whatsappService">جاري البحث ..</label>
+        </div>
+        <div class="data-row">
+            <label class="title">خدمة إستعلام البيانات من التطبيق: </label>
+            <label class="value api-service" id="apiService">جاري البحث ..</label>
+        </div>
+    </div>
+    <div class="log-section" id="logSection">
+        <h3>البيانات</h3>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        socket.on('macAddress', (macAddress) => {
+            document.getElementById('macAddress').textContent = macAddress;
+        });
+
+        socket.on('ipAddress', (ipAddress) => {
+            document.getElementById('ipAddress').textContent = ipAddress;
+        });
+
+        socket.on('smsService', (smsService) => {
+            document.getElementById('smsService').textContent = smsService;
+        });
+
+        socket.on('whatsappService', (whatsappService) => {
+            document.getElementById('whatsappService').textContent = whatsappService;
+            if (whatsappService) {
+                document.getElementById('whatsappButton').style.display = 'block';
+            } else {
+                document.getElementById('whatsappButton').style.display = 'none';
+            }
+        });
+
+        socket.on('apiService', (apiService) => {
+            document.getElementById('apiService').textContent = apiService;
+        });
+
+        socket.on('log', (log) => {
+            const logSection = document.getElementById('logSection');
+            const logMessage = document.createElement('div');
+            logMessage.classList.add('log-message');
+            if (log.type === 'success') {
+                logMessage.classList.add('log-success');
+            } else if (log.type === 'error') {
+                logMessage.classList.add('log-error');
+            } else {
+                logMessage.classList.add('log-info');
+            }
+            logMessage.textContent = log.message;
+            logSection.appendChild(logMessage);
+            logSection.scrollTop = logSection.scrollHeight;
+        });
+
+        function navigateToWhatsappPage() {
+            window.open('/whatsapp.html', '_blank');
+        }
+    </script>
+</body>
+
+</html>

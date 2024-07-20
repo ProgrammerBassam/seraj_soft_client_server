@@ -1,0 +1,8 @@
+node_modules
+storage
+.DS_Store
+session_auth_info
+.clinic
+
+# Ignore all .exe files
+*.exe
