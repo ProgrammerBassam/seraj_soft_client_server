@@ -11,13 +11,18 @@ const open = require('open');
 const helmet = require('helmet');
 const timeout = require('connect-timeout');
 const cors = require('cors');
-require('./utils/cache.services');
+const { getValue } = require('./utils/cache.services');
 require('./utils/check_ip_cron');
 const { initializeWhatsappService, updateQrs } = require('./utils/whatssapp.service');
 const { initSocket } = require('./utils/local_socket');
 const response = require('./utils/responses');
+const Sentry = require('@sentry/node');
 
 const app = express();
+
+// Request Handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler());
+
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
@@ -29,6 +34,8 @@ const io = new Server(server, {
 });
 
 const PORT = 65531;
+
+
 
 // Serve static files
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -60,6 +67,38 @@ io.of('/whatsapp1').on('connection', (socket) => {
 // Initialize services
 initSocket(server);
 initializeWhatsappService();
+
+// Error Handler
+app.use(Sentry.Handlers.errorHandler());
+
+// General error handling middleware
+app.use(async (err, req, res, next) => {
+
+    const clientCode = await getValue({ key: 'mac_address' })
+
+    Sentry.withScope(scope => {
+        // Add user info if available
+        if (clientCode) {
+            scope.setUser({
+                id: clientCode,
+            });
+        }
+
+        // Add request details
+        scope.setExtra('request_url', req.originalUrl);
+        scope.setExtra('method', req.method);
+        scope.setExtra('headers', req.headers);
+
+        // Capture the exception
+        Sentry.captureException(err);
+
+        // Send a response
+        res.status(500).json({
+            message: 'Internal Server Error',
+        });
+    });
+});
+
 
 server.listen(PORT, async () => {
     console.log(`Server is running on http://localhost:${PORT}`);

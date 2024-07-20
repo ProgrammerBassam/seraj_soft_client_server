@@ -1,4 +1,4 @@
-// const { sendMessage } = require('../../utils/whatssapp.service')
+const { sendMessage } = require('../../utils/whatssapp.service')
 const { executePost } = require('../../utils/request.utils')
 
 const SendSms = async ({ title, body, token }) => {
@@ -10,21 +10,25 @@ const SendSms = async ({ title, body, token }) => {
             body: body
         }
 
-        executePost("http://localhost:3005/api/v1/messages/sms", params)
+        const result = await executePost("http://localhost:3005/api/v1/messages/sms", params)
+        return result
 
     } catch (error) {
+        logger.logError('حدث خطأ عند إرسال الرسالة النصية ' + error.message)
         throw error
     }
 }
 
 const SendWhatsApp = async ({ receipt, msg }) => {
-    /*   try {
-   
-           await sendMessage(receipt, msg)
-   
-       } catch (error) {
-           throw error
-       } */
+    try {
+
+        const result = await sendMessage(receipt, msg)
+        return result
+
+    } catch (error) {
+        logger.logError('حدث خطأ عند إرسال رسالة الواتساب ' + error.message)
+        throw error
+    }
 }
 
 

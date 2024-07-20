@@ -4,6 +4,7 @@ const getMAC = require('./getMAC');
 const { saveInCache } = require('./cache.services');
 const ip = require('ip');
 const eventEmitter = require('./events');
+const Sentry = require('@sentry/node');
 
 let io;
 
@@ -42,7 +43,16 @@ function emitCustom({ key, value }) {
 
 // Listen for log events and broadcast them
 logger.on('log', (log) => {
-    io.emit('log', log);
+    try {
+        io.emit('log', log);
+    } catch (error) {
+        Sentry.withScope(scope => {
+
+            scope.setExtra('route', '/logger.on');
+            Sentry.captureException(error);
+        });
+    }
+
 });
 
 function emitLog(log) {

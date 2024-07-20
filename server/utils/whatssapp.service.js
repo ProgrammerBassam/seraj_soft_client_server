@@ -1,4 +1,4 @@
-const { default: makeWASocket, DisconnectReason, useMultiFileAuthState } = require("@whiskeysockets/baileys");
+const { default: makeWASocket, DisconnectReason, useMultiFileAuthState, delay } = require("@whiskeysockets/baileys");
 const log = require("pino")();
 const { Boom } = require("@hapi/boom");
 const qrcode = require("qrcode");
@@ -50,7 +50,7 @@ async function handleDisconnect(reason) {
     if (reason === DisconnectReason.badSession) {
         logger.logError('ملفات جلسة الواتس ليست سليمة. يتم حذف المجلد الان.')
         await deleteSessionFolder();
-        sock.logout();
+        // sock.logout();
     } else if (reason === DisconnectReason.connectionClosed) {
         logger.logInfo('يتم إعادة الإتصال بخدمة الواتساب حالياً')
         connectToWhatsApp();
@@ -59,11 +59,11 @@ async function handleDisconnect(reason) {
         connectToWhatsApp();
     } else if (reason === DisconnectReason.connectionReplaced) {
         logger.logInfo('تسجيل الخروج من الواتساب بسبب تغيير الإتصال')
-        sock.logout();
+        // sock.logout();
     } else if (reason === DisconnectReason.loggedOut) {
         logger.logInfo('تم تسجيل الخروج وحذف المجلد الرجاء مسح رمز الباركود مره أخرى')
         await deleteSessionFolder();
-        sock.logout();
+        //  sock.logout();
     } else if (reason === DisconnectReason.restartRequired) {
         logger.logInfo('يتم إعادة تشغيل خدمة الواتساب')
         connectToWhatsApp();
@@ -124,6 +124,42 @@ const updateQrs = (socket) => {
     }
 }
 
+const sendMessage = async (receipt, body) => {
+    let numberWA;
+
+    try {
+        numberWA = "967" + receipt + "@s.whatsapp.net";
+
+        if (isConnected()) {
+            const exist = await sock.onWhatsApp(numberWA);
+
+            if (exist?.jid || (exist && exist[0]?.jid)) {
+                const jid = exist.jid || exist[0].jid
+
+                await sock.presenceSubscribe(jid)
+                await delay(500)
+
+                await sock.sendPresenceUpdate('composing', jid)
+                await delay(2000)
+
+                await sock.sendPresenceUpdate('paused', jid)
+
+                await sock.sendMessage(jid, {
+                    text: body,
+                })
+
+                return { success: true }
+            } else {
+                return { success: false, data: 'رقم المستلم ليس لديه حساب واتس' }
+            }
+        } else {
+            return { success: false, data: 'لم نتمكن من إرسال رسالة الواتساب لأنك غير متصل' }
+        }
+    } catch (err) {
+        return { success: false, data: err.message }
+    }
+}
 
 
-module.exports = { initializeWhatsappService, updateQrs };
+
+module.exports = { initializeWhatsappService, updateQrs, sendMessage };

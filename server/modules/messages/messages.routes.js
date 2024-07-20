@@ -3,7 +3,7 @@ const messagesRouter = express.Router()
 
 const ctrl = require('./messages.controller')
 
-messagesRouter.get('/sms', ctrl.SendSms)
-//messagesRouter.get('/whatsapp', ctrl.SendWhatsApp)
+messagesRouter.post('/sms', ctrl.SendSms)
+messagesRouter.get('/whatsapp', ctrl.SendWhatsApp)
 
 module.exports = messagesRouter
