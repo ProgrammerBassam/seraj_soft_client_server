@@ -11,7 +11,7 @@ const SendSms = async ({ title, body, token }) => {
             body: body
         }
 
-        const result = await executePost("http://192.168.0.109:3005/api/v1/messages/sms", params)
+        const result = await executePost("http://212.39.94.227:3005/api/v1/messages/sms", params)
         return result
 
     } catch (error) {

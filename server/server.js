@@ -136,7 +136,11 @@ process.on('unhandledRejection', (reason, promise) => {
     myLogger.logError('خطأ غير متوقع ' + reason + 'عند ' + promise)
 
     // Capture the exception and send it to Sentry
-    Sentry.captureException(err);
+    try {
+        Sentry.captureException(reason);
+    } catch(err) {
+
+    }
 
     // Optionally, you can delay the process exit to ensure the error is sent to Sentry
     Sentry.flush(2000).then(() => {

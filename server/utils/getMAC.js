@@ -1,45 +1,46 @@
-const { exec } = require('child_process');
 const os = require('os');
-const Buffer = require('buffer').Buffer;
+const network = require('network');
+const { exec } = require('child_process');
+const { Buffer } = require('buffer');
+
 
 function getMAC() {
     return new Promise((resolve, reject) => {
-        let command;
-
-        if (os.platform() === 'darwin') {
-            command = "ifconfig en0 | grep ether | awk '{print $2}'";
-        } else if (os.platform() === 'win32') {
-            command = 'getmac';
-        } else {
-            return reject(new Error('Unsupported platform'));
-        }
-
-        exec(command, (err, stdout) => {
+        network.get_interfaces_list((err, interfaces) => {
             if (err) {
                 return reject(err);
             }
 
-            // Process stdout based on platform
-            let macAddresses;
+            let macAddresses = [];
+
             if (os.platform() === 'win32') {
-                macAddresses = stdout
-                    .split('\n')
-                    .map(line => line.split(',')[0].replace(/"/g, '').trim())
-                    .filter(mac => mac.length > 0);
+                exec('getmac /fo csv /nh', (err, stdout) => {
+                    if (err) {
+                        return reject(err);
+                    }
+
+                    macAddresses = stdout
+                        .split('\n')
+                        .map(line => line.split(',')[0].replace(/"/g, '').trim())
+                        .filter(mac => mac.length > 0);
+
+                    const macString = macAddresses[0];
+                    console.log(macString)
+                    
+                    const encodedString = Buffer.from(macString).toString('base64');
+                    resolve(encodedString);
+                });
             } else {
-                macAddresses = stdout
-                    .split('\n')
-                    .map(line => line.trim())
-                    .filter(mac => mac.length > 0);
+                macAddresses = interfaces
+                    .map(iface => iface.mac)
+                    .filter(mac => mac && mac !== '00:00:00:00:00:00');
+
+                const macString = macAddresses[0];
+                console.log(macString)
+
+                const encodedString = Buffer.from(macString).toString('base64');
+                resolve(encodedString);
             }
-
-            // Join MAC addresses with "-"
-            const macString = macAddresses[0]
-
-            // Encode macString using Base64
-            const encodedString = Buffer.from(macString).toString('base64');
-
-            resolve(encodedString);
         });
     });
 }
