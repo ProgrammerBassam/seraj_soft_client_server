@@ -19,10 +19,14 @@ function getMAC() {
                         return reject(err);
                     }
 
-                    macAddresses = stdout
+                    // Regular expression to match a valid MAC address
+                    const macAddressRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+
+                    // Split the output into lines and extract valid MAC addresses
+                    const macAddresses = stdout
                         .split('\n')
                         .map(line => line.split(',')[0].replace(/"/g, '').trim())
-                        .filter(mac => mac.length > 0);
+                        .filter(mac => macAddressRegex.test(mac));
 
                     const macString = macAddresses[0];
                     console.log(macString)
