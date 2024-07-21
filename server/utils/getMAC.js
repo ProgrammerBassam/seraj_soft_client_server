@@ -26,20 +26,27 @@ function getMAC() {
 
                     const macString = macAddresses[0];
                     console.log(macString)
-                    
+
                     const encodedString = Buffer.from(macString).toString('base64');
                     resolve(encodedString);
                 });
             } else {
-                macAddresses = interfaces
-                    .map(iface => iface.mac)
-                    .filter(mac => mac && mac !== '00:00:00:00:00:00');
+                exec("ifconfig en0 | grep ether | awk '{print $2}'", (err, stdout) => {
+                    if (err) {
+                        return reject(err);
+                    }
 
-                const macString = macAddresses[0];
-                console.log(macString)
+                    macAddresses = stdout
+                        .split('\n')
+                        .map(line => line.trim())
+                        .filter(mac => mac.length > 0);
 
-                const encodedString = Buffer.from(macString).toString('base64');
-                resolve(encodedString);
+                    const macString = macAddresses[0];
+                    console.log(macString)
+
+                    const encodedString = Buffer.from(macString).toString('base64');
+                    resolve(encodedString);
+                });
             }
         });
     });
