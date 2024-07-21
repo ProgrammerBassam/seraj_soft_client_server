@@ -15,15 +15,16 @@ const SendSms = async (req, res) => {
 
         if (canUseSms) {
             const result = await service.SendSms({ title: title, body: body, token: token })
+            const resultBody = result.body
 
-            if (result.success) {
+            if (resultBody.success) {
                 logger.logSuccess('تم إرسال الرسالة النصية بنجاح!')
                 return response(res, 200, { success: true })
             } else {
 
-                if (result.body.data) {
-                    logger.logError('فشلت عملية إرسال الرسالة النصية ' + result.body.data)
-                    return response(res, 500, result.body.data)
+                if (resultBody.data) {
+                    logger.logError('فشلت عملية إرسال الرسالة النصية ' + resultBody.data)
+                    return response(res, 500, resultBody.data)
                 } else {
                     logger.logError('فشلت عملية إرسال الرسالة النصية ')
                     return response(res, 500, 'فشلت عملية إرسال الرسالة النصية ')
