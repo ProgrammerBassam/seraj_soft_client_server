@@ -16,7 +16,7 @@ const { getValue } = require('./utils/cache.services');
 require('./utils/check_ip_cron');
 require('./utils/server_socket.js');
 require('./utils/check_net_speed.js');
-// require('./utils/start_nginx.js');
+require('./utils/check_data_cron');
 const { initializeWhatsappService, updateQrs } = require('./utils/whatssapp.service');
 const { initSocket } = require('./utils/local_socket');
 const response = require('./utils/responses');
@@ -135,12 +135,6 @@ process.on('uncaughtException', (err) => {
 process.on('unhandledRejection', (reason, promise) => {
     myLogger.logError('خطأ غير متوقع ' + reason + 'عند ' + promise)
 
-    // Capture the exception and send it to Sentry
-    try {
-        Sentry.captureException(reason);
-    } catch(err) {
-
-    }
 
     // Optionally, you can delay the process exit to ensure the error is sent to Sentry
     Sentry.flush(2000).then(() => {
