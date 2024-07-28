@@ -187,7 +187,7 @@ const GetReportByAccNo = async ({ acc_no, start_date, end_date }) => {
     return result;
 };
 
-const GetAllSales = async ({ start_date, end_date }) => {
+const GetAllSales = async ({ bill_type, start_date, end_date }) => {
     await initializeOracleClient();
 
     let connection;
@@ -213,31 +213,38 @@ WHERE SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=ACCOUNTS.CURRENCY.CUR_NO
 AND  ((ACCOUNTS.SALES_DETAILES.BILL_NO=ACCOUNTS.SALES_BILL.BILL_NO)
 AND (ACCOUNTS.SALES_DETAILES.YEAR=ACCOUNTS.SALES_BILL.YEAR)
 AND (ACCOUNTS.SALES_BILL.ACC_NO=ACCOUNTS.CHART_ACC.ACC_NO))
-AND DAT=SYSDATE
-ORDER BY YEAR DESC ,MANUAL_BILL_NO;
+AND ACCOUNTS.SALES_BILL.DAT  BETWEEN TO_DATE(:date1, 'dd-mon-yy') AND TO_DATE(:date2, 'dd-mon-yy')
+AND ACCOUNTS.SALES_BILL.BILL_TYPE = :billType
+ORDER BY ACCOUNTS.SALES_BILL.YEAR DESC ,ACCOUNTS.SALES_BILL.MANUAL_BILL_NO
 `;
 
-        const checkBinds = {};
+        const checkBinds = { billType: bill_type, date1: start_date, date2: end_date };
         const options = { outFormat: oracledb.OUT_FORMAT_OBJECT };
 
         const checkResult = await connection.execute(checkSql, checkBinds, options);
 
         // Convert the encoding of the result rows
         const rows = checkResult.rows.map((row) => {
-            //     const encodedAccNameBytes = iconv.encode(row.ACC_NAME, 'ISO-8859-1');
-            //    const decodedAccNameString = iconv.decode(encodedAccNameBytes, 'windows-1256');
 
-            //    const encodedDetailsBytes = iconv.encode(row.DETAILS, 'ISO-8859-1');
-            //const decodedDetailsString = iconv.decode(encodedDetailsBytes, 'windows-1256');
-            //
+            const encodedAccNameBytes = iconv.encode(row.ACC_NAME, 'ISO-8859-1');
+            const decodedAccNameString = iconv.decode(encodedAccNameBytes, 'windows-1256');
+
+            const encodedDetailsBytes = iconv.encode(row.DETAILES, 'ISO-8859-1');
+            const decodedDetailsString = iconv.decode(encodedDetailsBytes, 'windows-1256');
+
+            const encodedCurNameBytes = iconv.encode(row.CUR_NAME, 'ISO-8859-1');
+            const decodedCurNametring = iconv.decode(encodedCurNameBytes, 'windows-1256');
+
+
             return {
                 ...row,
-                //   ACC_NAME: decodedAccNameString,
-                //   DETAILS: decodedDetailsString,
+                ACC_NAME: decodedAccNameString,
+                DETAILES: decodedDetailsString,
+                CUR_NAME: decodedCurNametring
             };
         });
 
-        result.entries.push(...rows);
+        result.push(...rows);
 
     } catch (err) {
         logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)

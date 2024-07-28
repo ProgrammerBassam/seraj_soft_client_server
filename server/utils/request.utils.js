@@ -1,7 +1,7 @@
 const superagent = require('superagent');
 const eventEmitter = require('./events');
 const logger = require('./logger')
-const { saveInCache } = require('./cache.services')
+const { getValue, saveInCache } = require('./cache.services')
 
 function executeGet(url) {
     return new Promise((resolve, reject) => {
@@ -36,6 +36,25 @@ function executePost(url, params) {
 
 eventEmitter.on('getProfileData', async () => {
     try {
+
+        if (await getValue({ key: 'is_registerd' })) {
+
+            const canUserSms = await getValue({ key: 'can_use_sms' })
+            const canUseWhatsapp = await getValue({ key: 'can_use_whatsapp' })
+            const canUseApi = await getValue({ key: 'can_use_api' })
+
+
+            eventEmitter.emit('emitCustom', { key: 'smsService', value: canUserSms ? 'مشترك' : 'غير مشترك' });
+            eventEmitter.emit('emitCustom', { key: 'whatsappService', value: canUseWhatsapp ? 'مشترك' : 'غير مشترك' });
+            eventEmitter.emit('emitCustom', { key: 'apiService', value: canUseApi ? 'مشترك' : 'غير مشترك' });
+
+            if (canUseApi) {
+                eventEmitter.emit('initServerSocket');
+            }
+
+            return;
+        }
+
         const result = await executePost("http://localhost:65531/api/v1/auth/client-data", {})
         const data = result.body.data
 

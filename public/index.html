@@ -278,6 +278,7 @@
         // Populate new features list
         const newFeaturesList = document.getElementById('newFeaturesList');
         socket.on('newFeaturesList', (features) => {
+            newFeaturesList.innerHTML = ''; // Clear previous data
             features.forEach(feature => {
                 const listItem = document.createElement('li');
                 listItem.textContent = feature;
@@ -288,6 +289,7 @@
         // Populate videos list
         const videosList = document.getElementById('videosList');
         socket.on('videosList', (videos) => {
+            videosList.innerHTML = ''; // Clear previous data
             videos.forEach(video => {
                 const listItem = document.createElement('li');
                 listItem.classList.add('list-item');

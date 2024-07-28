@@ -112,9 +112,7 @@ server.listen(PORT, async () => {
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
         console.error(`Port ${PORT} is already in use`);
-        server.close(() => {
-            console.log('Server closed due to EADDRINUSE error');
-        });
+        process.exit();
     } else {
         console.error(`Server error: ${err.message}`);
     }
