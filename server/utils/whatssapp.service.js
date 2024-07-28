@@ -24,7 +24,10 @@ async function connectToWhatsApp() {
         sock = makeWASocket({
             printQRInTerminal: false,
             auth: state,
-            logger: log.child({ level: "silent" })
+            logger: log.child({ level: "silent" }),
+            syncFullHistory: false,
+            /** Default timeout for queries, undefined for no timeout */
+            //  defaultQueryTimeoutMs: undefined,
         });
 
         sock.ev.on("connection.update", async (update) => {

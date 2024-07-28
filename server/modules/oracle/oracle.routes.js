@@ -6,4 +6,6 @@ const ctrl = require('./oracle.controller')
 oracleRouter.post('/search-chart-accs', ctrl.SearchChartAcc)
 oracleRouter.post('/get-report-by-account-no', ctrl.GetReportByAccNo)
 
+oracleRouter.post('/get-all-sales', ctrl.GetAllSales)
+
 module.exports = oracleRouter

@@ -109,6 +109,17 @@ server.listen(PORT, async () => {
     open(`http://localhost:${PORT}`);
 });
 
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use`);
+        server.close(() => {
+            console.log('Server closed due to EADDRINUSE error');
+        });
+    } else {
+        console.error(`Server error: ${err.message}`);
+    }
+});
+
 // Signal and Exception Handling
 process.on('SIGINT', () => {
     console.log('Received SIGINT. Shutting down gracefully...');
@@ -133,6 +144,7 @@ process.on('uncaughtException', (err) => {
 });
 
 process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
     myLogger.logError('خطأ غير متوقع ' + reason + 'عند ' + promise)
 
 
@@ -145,4 +157,8 @@ process.on('unhandledRejection', (reason, promise) => {
         myLogger.logError('خطأ غير متوقع عند إرسال الخطأ إلينا ' + flushErr)
         // Continue execution even if flushing to Sentry fails
     });
+});
+
+process.on('rejectionHandled', (promise) => {
+    console.log('Rejection Handled at:', promise);
 });

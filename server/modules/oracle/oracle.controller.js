@@ -46,4 +46,23 @@ const GetReportByAccNo = async (req, res) => {
     }
 }
 
-module.exports = { SearchChartAcc, GetReportByAccNo }
+const GetAllSales = async (req, res) => {
+    try {
+
+        const { requestId } = req.query
+        const { start_date, end_date } = req.body
+
+        const result = await service.GetAllSales({ start_date, end_date })
+        if (requestId) {
+            return res.status(200).json({ requestId: requestId, responseData: result })
+        } else {
+            return response(res, 200, result)
+        }
+
+
+    } catch (error) {
+        return response(res, 500, error.message)
+    }
+}
+
+module.exports = { SearchChartAcc, GetReportByAccNo, GetAllSales }
