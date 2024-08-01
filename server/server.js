@@ -8,15 +8,15 @@ const http = require('http');
 const logger = require('morgan');
 const myLogger = require('./utils/logger.js');
 const { Server } = require('socket.io');
-const open = require('open');
 const helmet = require('helmet');
 const timeout = require('connect-timeout');
 const cors = require('cors');
 const { getValue } = require('./utils/cache.services');
 require('./utils/check_ip_cron');
 require('./utils/server_socket.js');
-require('./utils/check_net_speed.js');
 require('./utils/check_data_cron');
+require('./utils/check_whatsapp_msgs_cron.js');
+require('./utils/check_sms_msgs_cron.js');
 const { initializeWhatsappService, updateQrs } = require('./utils/whatssapp.service');
 const { initSocket } = require('./utils/local_socket');
 const response = require('./utils/responses');
@@ -24,8 +24,6 @@ const Sentry = require('@sentry/node');
 
 const app = express();
 
-// Request Handler must be the first middleware on the app
-app.use(Sentry.Handlers.requestHandler());
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -72,8 +70,9 @@ io.of('/whatsapp1').on('connection', (socket) => {
 initSocket(server);
 initializeWhatsappService();
 
-// Error Handler
-app.use(Sentry.Handlers.errorHandler());
+// Add this after all routes,
+// but before any and other error-handling middlewares are defined
+Sentry.setupExpressErrorHandler(app);
 
 // General error handling middleware
 app.use(async (err, req, res, next) => {
@@ -104,10 +103,20 @@ app.use(async (err, req, res, next) => {
 });
 
 
-server.listen(PORT, async () => {
+(async () => {
+    const open = (await import('open')).default;
+
+    const PORT = process.env.PORT || 65531;
+
+    server.listen(PORT, async () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+        await open(`http://localhost:${PORT}`);
+    });
+})();
+/*server.listen(PORT, async () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    open(`http://localhost:${PORT}`);
-});
+    await open(`http://localhost:${PORT}`);
+});*/
 
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {

@@ -22,12 +22,12 @@ async function connectToWhatsApp() {
     try {
         const { state, saveCreds } = await useMultiFileAuthState("session_auth_info");
         sock = makeWASocket({
-            printQRInTerminal: false,
+            printQRInTerminal: true,
             auth: state,
             logger: log.child({ level: "silent" }),
             syncFullHistory: false,
             /** Default timeout for queries, undefined for no timeout */
-            //  defaultQueryTimeoutMs: undefined,
+            defaultQueryTimeoutMs: undefined,
         });
 
         sock.ev.on("connection.update", async (update) => {
@@ -36,7 +36,11 @@ async function connectToWhatsApp() {
 
             if (connection === "close") {
                 let reason = new Boom(lastDisconnect.error).output.statusCode;
+
                 logger.logError(`تم غلق الإتصال بالواتساب بسبب ${reason}`)
+
+                // Wait for 10 seconds before handling disconnect
+                await new Promise(resolve => setTimeout(resolve, 10000));
                 await handleDisconnect(reason);
             } else if (connection === "open") {
                 logger.logSuccess('الإتصال بخدمة الواتساب متاح')
@@ -84,6 +88,7 @@ const isConnected = () => {
 };
 
 const updateQR = (data) => {
+
     switch (data) {
         case "qr":
             qrcode.toDataURL(qrDinamic, (err, url) => {
@@ -116,12 +121,11 @@ const initializeWhatsappService = () => {
 };
 
 const updateQrs = (socket) => {
+
     soket = socket;
-
-    logger.logSuccess('إتصال الواتساب بخدمة سراج سوف تمت بنجاح')
-
     if (isConnected()) {
         updateQR("connected");
+        logger.logSuccess('إتصال الواتساب بخدمة سراج سوف تمت بنجاح')
     } else if (qrDinamic) {
         updateQR("qr");
     }
@@ -163,6 +167,9 @@ const sendMessage = async (receipt, body) => {
     }
 }
 
+function isWhatsappConnected() {
+    return sock?.user ? true : false;
+}
 
 
-module.exports = { initializeWhatsappService, updateQrs, sendMessage };
+module.exports = { initializeWhatsappService, updateQrs, sendMessage, isWhatsappConnected };

@@ -15,10 +15,10 @@ const GetClientData = async () => {
     }
 }
 
-const UpdateIpAddress = async () => {
+const UpdateIpAddress = async ({ currentIp }) => {
     try {
 
-        const localIp = await getValue({ key: "local_ip" })
+        const localIp = currentIp
         const docId = await getValue({ key: "doc_id" })
 
         const params = { local_ip: localIp, doc_id: docId }

@@ -24,7 +24,8 @@ const CheckGlobal = async (req, res) => {
 
         await service.CheckGlobal()
         logger.logSuccess('تم الإتصال بشبكة الإنترنت بنجاح!')
-        return res.status(200).json({ requestId: requestId, responseData: true })
+        return res.status(200).json({ requestId: requestId, responseData: { success: true } })
+        //  return res.status(200).json({ requestId: requestId, responseData: true })
 
     } catch (error) {
         logger.logError('خطأ عند الإتصال بشبكة الإنترنت ' + error.message)

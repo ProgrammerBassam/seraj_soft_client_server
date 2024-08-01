@@ -2,6 +2,7 @@ const service = require('./auth.service.js')
 const response = require('../../utils/responses.js')
 const logger = require('../../utils/logger.js')
 const eventEmitter = require('../../utils/events');
+const { saveInCache } = require('../../utils/cache.services.js');
 
 const GetClientData = async (req, res) => {
     logger.logInfo('تحديث البيانات')
@@ -23,10 +24,13 @@ const GetClientData = async (req, res) => {
 const UpdateIpAddress = async (req, res) => {
     logger.logInfo('تحديث العنوان الجديد لدينا')
     try {
-        const result = await service.UpdateIpAddress()
+        const { currentIp } = req.body
+        const result = await service.UpdateIpAddress({ currentIp })
 
         if (result.status) {
-            logger.logSuccess('تم تحديث عنوان الاي بي الخاص بكم بنجاح')
+            logger.logSuccess('تم تحديث عنوان الاي بي الخاص بكم بنجاح' + ' إلى ' + currentIp)
+
+            await saveInCache({ key: 'local_ip', value: currentIp });
         } else {
             logger.logError(result.data)
         }

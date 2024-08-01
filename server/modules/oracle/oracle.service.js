@@ -187,7 +187,7 @@ const GetReportByAccNo = async ({ acc_no, start_date, end_date }) => {
     return result;
 };
 
-const GetAllSales = async ({ bill_type, start_date, end_date }) => {
+const GetAllSales = async ({ account_no, bill_type, start_date, end_date }) => {
     await initializeOracleClient();
 
     let connection;
@@ -215,10 +215,11 @@ AND (ACCOUNTS.SALES_DETAILES.YEAR=ACCOUNTS.SALES_BILL.YEAR)
 AND (ACCOUNTS.SALES_BILL.ACC_NO=ACCOUNTS.CHART_ACC.ACC_NO))
 AND ACCOUNTS.SALES_BILL.DAT  BETWEEN TO_DATE(:date1, 'dd-mon-yy') AND TO_DATE(:date2, 'dd-mon-yy')
 AND ACCOUNTS.SALES_BILL.BILL_TYPE = :billType
+AND ACCOUNTS.SALES_BILL.ACC_NO = :accountNo
 ORDER BY ACCOUNTS.SALES_BILL.YEAR DESC ,ACCOUNTS.SALES_BILL.MANUAL_BILL_NO
 `;
 
-        const checkBinds = { billType: bill_type, date1: start_date, date2: end_date };
+        const checkBinds = { accountNo: account_no, billType: bill_type, date1: start_date, date2: end_date };
         const options = { outFormat: oracledb.OUT_FORMAT_OBJECT };
 
         const checkResult = await connection.execute(checkSql, checkBinds, options);
@@ -261,4 +262,110 @@ ORDER BY ACCOUNTS.SALES_BILL.YEAR DESC ,ACCOUNTS.SALES_BILL.MANUAL_BILL_NO
     return result;
 };
 
-module.exports = { SearchChartAcc, GetReportByAccNo, GetAllSales }
+const GetAllSalesAccounts = async ({ currency_no }) => {
+    await initializeOracleClient();
+
+    let connection;
+    let result = [];
+
+    try {
+        // Timeout for getting the connection
+        const getConnectionTimeout = createTimeoutPromise(15000, 'getConnection timed out');
+        connection = await Promise.race([
+            oracledb.getConnection(await getConfig()),
+            getConnectionTimeout,
+        ]);
+
+        const checkSql = `
+       SELECT ACCOUNTS.SALES_BILL.ACC_NO, ACCOUNTS.CHART_ACC.ACC_NAME
+FROM ACCOUNTS.CHART_ACC, ACCOUNTS.SALES_BILL
+WHERE (ACCOUNTS.SALES_BILL.ACC_NO=ACCOUNTS.CHART_ACC.ACC_NO)
+AND SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=:currencyNo
+GROUP BY ACCOUNTS.SALES_BILL.ACC_NO, ACCOUNTS.CHART_ACC.ACC_NAME
+`;
+
+        const checkBinds = { currencyNo: currency_no };
+        const options = { outFormat: oracledb.OUT_FORMAT_OBJECT };
+
+        const checkResult = await connection.execute(checkSql, checkBinds, options);
+
+        // Convert the encoding of the result rows
+        const rows = checkResult.rows.map((row) => {
+            const encodedAccNameBytes = iconv.encode(row.ACC_NAME, 'ISO-8859-1');
+            const decodedAccNameString = iconv.decode(encodedAccNameBytes, 'windows-1256');
+
+            return {
+                ...row,
+                ACC_NAME: decodedAccNameString,
+            };
+        });
+
+        result.push(...rows);
+
+    } catch (err) {
+        logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                logger.logError('حصل  2 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+            }
+        }
+    }
+
+    return result;
+};
+
+const GetCurrencies = async () => {
+    await initializeOracleClient();
+
+    let connection;
+    let result = [];
+
+    try {
+        // Timeout for getting the connection
+        const getConnectionTimeout = createTimeoutPromise(15000, 'getConnection timed out');
+        connection = await Promise.race([
+            oracledb.getConnection(await getConfig()),
+            getConnectionTimeout,
+        ]);
+
+        const checkSql = `
+       SELECT CUR_NO, CUR_NAME FROM ACCOUNTS.CURRENCY ORDER BY CUR_NO
+`;
+
+        const checkBinds = {};
+        const options = { outFormat: oracledb.OUT_FORMAT_OBJECT };
+
+        const checkResult = await connection.execute(checkSql, checkBinds, options);
+
+        // Convert the encoding of the result rows
+        const rows = checkResult.rows.map((row) => {
+            const encodeCurNameBytes = iconv.encode(row.CUR_NAME, 'ISO-8859-1');
+            const decodedCurNameString = iconv.decode(encodeCurNameBytes, 'windows-1256');
+
+            return {
+                ...row,
+                CUR_NAME: decodedCurNameString,
+            };
+        });
+
+        result.push(...rows);
+
+    } catch (err) {
+        logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                logger.logError('حصل  2 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+            }
+        }
+    }
+
+    return result;
+};
+
+module.exports = { SearchChartAcc, GetReportByAccNo, GetAllSales, GetAllSalesAccounts, GetCurrencies }

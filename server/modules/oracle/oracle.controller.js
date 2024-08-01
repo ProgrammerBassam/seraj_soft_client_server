@@ -46,13 +46,14 @@ const GetReportByAccNo = async (req, res) => {
     }
 }
 
+// Sales
 const GetAllSales = async (req, res) => {
     try {
 
         const { requestId } = req.query
-        const { bill_type, start_date, end_date } = req.body
+        const { account_no, bill_type, start_date, end_date } = req.body
 
-        const result = await service.GetAllSales({ bill_type, start_date, end_date })
+        const result = await service.GetAllSales({ account_no, bill_type, start_date, end_date })
         if (requestId) {
             return res.status(200).json({ requestId: requestId, responseData: result })
         } else {
@@ -65,4 +66,44 @@ const GetAllSales = async (req, res) => {
     }
 }
 
-module.exports = { SearchChartAcc, GetReportByAccNo, GetAllSales }
+const GetAllSalesAccounts = async (req, res) => {
+    try {
+
+        const { requestId } = req.query
+        const { currency_no } = req.body
+
+
+        const result = await service.GetAllSalesAccounts({ currency_no })
+        if (requestId) {
+            return res.status(200).json({ requestId: requestId, responseData: result })
+        } else {
+            return response(res, 200, result)
+        }
+
+
+    } catch (error) {
+        return response(res, 500, error.message)
+    }
+}
+
+// Currencies
+const GetCurrencies = async (req, res) => {
+    try {
+
+        const { requestId } = req.query
+
+
+        const result = await service.GetCurrencies()
+        if (requestId) {
+            return res.status(200).json({ requestId: requestId, responseData: result })
+        } else {
+            return response(res, 200, result)
+        }
+
+
+    } catch (error) {
+        return response(res, 500, error.message)
+    }
+}
+
+module.exports = { SearchChartAcc, GetReportByAccNo, GetAllSales, GetAllSalesAccounts, GetCurrencies }

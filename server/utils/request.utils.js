@@ -35,9 +35,10 @@ function executePost(url, params) {
 }
 
 eventEmitter.on('getProfileData', async () => {
+    console.log("asdasdasd");
     try {
 
-        if (await getValue({ key: 'is_registerd' })) {
+        if (await getValue({ key: 'is_registerd' }) == true) {
 
             const canUserSms = await getValue({ key: 'can_use_sms' })
             const canUseWhatsapp = await getValue({ key: 'can_use_whatsapp' })
@@ -101,10 +102,11 @@ eventEmitter.on('getProfileData', async () => {
             const serverIp = clientData['server_ip']
             await saveInCache({ key: "server_ip", value: serverIp ?? "" })
 
+            const localIp = clientData['local_ip']
+            await saveInCache({ key: "local_ip", value: localIp ?? "" })
+
             const encryptMacAddress = clientData['encrypt_mac_address']
             await saveInCache({ key: "encrypt_mac_address", value: encryptMacAddress ?? "" })
-
-            await executePost("http://localhost:65531/api/v1/auth/update-ip", {})
 
             eventEmitter.emit('emitCustom', { key: 'smsService', value: canUserSms ? 'مشترك' : 'غير مشترك' });
             eventEmitter.emit('emitCustom', { key: 'whatsappService', value: canUseWhatsapp ? 'مشترك' : 'غير مشترك' });
@@ -112,6 +114,15 @@ eventEmitter.on('getProfileData', async () => {
 
             if (canUseApi) {
                 eventEmitter.emit('initServerSocket');
+                eventEmitter.emit('runIpChecker');
+            }
+
+            if (canUseWhatsapp) {
+                eventEmitter.emit('runWhatsappCron');
+            }
+
+            if (canUserSms) {
+                eventEmitter.emit('runSmsCron');
             }
 
             await executeGet("http://localhost:65531/api/v1/auth/get-features")

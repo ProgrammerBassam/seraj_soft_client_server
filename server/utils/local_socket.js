@@ -10,6 +10,8 @@ let io;
 const connectedClients = new Map();
 
 async function initSocket(server) {
+
+
     if (!io) {
         io = new Server(server);
 
@@ -17,6 +19,7 @@ async function initSocket(server) {
             getMAC().then(async macAddress => {
                 socket.emit('macAddress', macAddress);
                 await saveInCache({ key: "mac_address", value: macAddress });
+
                 eventEmitter.emit('getProfileData');
 
                 // Check for existing connection and disconnect if found
