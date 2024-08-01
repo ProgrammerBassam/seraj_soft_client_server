@@ -1,6 +1,6 @@
 {
   "name": "seraj_soft_client_server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Seraj Soft API",
   "engines": {
     "node": "v20.14.0",

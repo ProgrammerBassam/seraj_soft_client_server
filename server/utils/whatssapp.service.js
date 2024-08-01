@@ -22,7 +22,7 @@ async function connectToWhatsApp() {
     try {
         const { state, saveCreds } = await useMultiFileAuthState("session_auth_info");
         sock = makeWASocket({
-            printQRInTerminal: true,
+            printQRInTerminal: false,
             auth: state,
             logger: log.child({ level: "silent" }),
             syncFullHistory: false,
