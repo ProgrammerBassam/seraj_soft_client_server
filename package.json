@@ -4,10 +4,12 @@
   "description": "Seraj Soft API",
   "main": "main.js",
   "scripts": {
-    "start": "node server/server.js",
+    "start": "electron-forge start",
     "electron-start": "concurrently \"npm run start\" \"wait-on http://localhost:65531 && electron .\"",
     "electron-start-prod": "concurrently \"npm run start\" \"wait-on http://localhost:65531 && electron . --no-console --main=main.prod.js\"",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "build": {
     "appId": "com.serajSoft.clientServer",
@@ -32,6 +34,7 @@
     "cache-manager": "^5.7.4",
     "connect-timeout": "^1.9.0",
     "cron": "^3.1.7",
+    "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.2.1",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
@@ -51,9 +54,16 @@
     "superagent": "^9.0.2"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
     "concurrently": "^8.2.2",
     "electron": "^31.3.1",
-    "electron-builder": "^24.13.3",
     "electron-is-dev": "^3.0.1",
     "wait-on": "^7.2.0"
   }

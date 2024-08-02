@@ -6,3 +6,5 @@ session_auth_info
 
 # Ignore all .exe files
 *.exe
+
+out/
