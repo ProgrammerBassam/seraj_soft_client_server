@@ -103,7 +103,7 @@ app.use(async (err, req, res, next) => {
 });
 
 
-(async () => {
+/*(async () => {
     const open = (await import('open')).default;
 
     const PORT = process.env.PORT || 65531;
@@ -112,11 +112,11 @@ app.use(async (err, req, res, next) => {
         console.log(`Server is running on http://localhost:${PORT}`);
         await open(`http://localhost:${PORT}`);
     });
-})();
-/*server.listen(PORT, async () => {
+})();*/
+server.listen(PORT, async () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    await open(`http://localhost:${PORT}`);
-});*/
+    //  await open(`http://localhost:${PORT}`);
+});
 
 server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {

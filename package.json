@@ -2,14 +2,24 @@
   "name": "seraj_soft_client_server",
   "version": "1.0.3",
   "description": "Seraj Soft API",
-  "engines": {
-    "node": "v20.14.0",
-    "npm": "10.7.0"
-  },
-  "main": "server/server.js",
+  "main": "main.js",
   "scripts": {
     "start": "node server/server.js",
-    "build": "nexe -c nexe.config.js --build --verbose --resource app.manifest"
+    "electron-start": "concurrently \"npm run start\" \"wait-on http://localhost:65531 && electron .\"",
+    "electron-start-prod": "concurrently \"npm run start\" \"wait-on http://localhost:65531 && electron . --no-console --main=main.prod.js\"",
+    "dist": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.serajSoft.clientServer",
+    "files": [
+      "public/**/*",
+      "main.prod.js",
+      "server/server.js",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
   },
   "keywords": [],
   "author": "Seraj Soft",
@@ -22,6 +32,7 @@
     "cache-manager": "^5.7.4",
     "connect-timeout": "^1.9.0",
     "cron": "^3.1.7",
+    "electron-updater": "^6.2.1",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
     "iconv-lite": "^0.6.3",
@@ -37,8 +48,13 @@
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
-    "speedtest-net": "^2.2.0",
-    "superagent": "^9.0.2",
-    "unzipper": "^0.12.3"
+    "superagent": "^9.0.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3",
+    "electron-is-dev": "^3.0.1",
+    "wait-on": "^7.2.0"
   }
 }
