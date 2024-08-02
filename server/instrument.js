@@ -1,11 +1,11 @@
 // Import with `import * as Sentry from "@sentry/node"` if you are using ESM
 const Sentry = require("@sentry/node");
-const { nodeProfilingIntegration } = require("@sentry/profiling-node");
+//const { nodeProfilingIntegration } = require("@sentry/profiling-node");
 
 Sentry.init({
     dsn: "https://2ae90699fd9922a121ece95962772529@o4507402119938048.ingest.us.sentry.io/4507634951913472",
     integrations: [
-        nodeProfilingIntegration(),
+    //    nodeProfilingIntegration(),
         Sentry.anrIntegration({ captureStackTrace: true })
     ],
     // Performance Monitoring

@@ -1,6 +1,6 @@
 {
   "name": "seraj_soft_client_server",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Seraj Soft API",
   "main": "main.prod.js",
   "scripts": {
@@ -26,12 +26,12 @@
   "license": "ISC",
   "dependencies": {
     "@sentry/node": "^8.22.0",
-    "@sentry/profiling-node": "^8.22.0",
     "@whiskeysockets/baileys": "github:WhiskeySockets/Baileys",
     "body-parser": "^1.20.2",
     "cache-manager": "^5.7.4",
     "connect-timeout": "^1.9.0",
     "cron": "^3.1.7",
+    "electron-nightly": "^33.0.0-nightly.20240801",
     "electron-squirrel-startup": "^1.0.1",
     "electron-updater": "^6.2.1",
     "express": "^4.19.2",
