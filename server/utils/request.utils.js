@@ -2,6 +2,7 @@ const superagent = require('superagent');
 const eventEmitter = require('./events');
 const logger = require('./logger')
 const { getValue, saveInCache } = require('./cache.services')
+const Sentry = require("@sentry/node");
 
 function executeGet(url) {
     return new Promise((resolve, reject) => {
@@ -35,7 +36,6 @@ function executePost(url, params) {
 }
 
 eventEmitter.on('getProfileData', async () => {
-    console.log("asdasdasd");
     try {
 
         if (await getValue({ key: 'is_registerd' }) == true) {
@@ -126,6 +126,10 @@ eventEmitter.on('getProfileData', async () => {
             }
 
             await executeGet("http://localhost:65531/api/v1/auth/get-features")
+
+            Sentry.setUser({ docId: clientData.doc_id, id: encryptMacAddress ?? "" });
+
+
         } else {
             await saveInCache({ key: 'is_registerd', value: false })
         }

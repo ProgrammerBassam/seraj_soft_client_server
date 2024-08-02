@@ -66,12 +66,12 @@ const GetAllSales = async (req, res) => {
     }
 }
 
+// Get All Sales Accounts
 const GetAllSalesAccounts = async (req, res) => {
     try {
 
         const { requestId } = req.query
         const { currency_no } = req.body
-
 
         const result = await service.GetAllSalesAccounts({ currency_no })
         if (requestId) {

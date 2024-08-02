@@ -7,7 +7,8 @@ const { isWhatsappConnected } = require('./whatssapp.service')
 
 
 // Define the cron job without starting it immediately
-let scheduledTask = cron.schedule('*/10 * * * *', () => {
+let scheduledTask = cron.schedule('*/1 * * * *', () => {
+
     if (isWhatsappConnected()) {
         readFileToList(whatsappFilePath, async (list) => {
             if (list.length > 0) {
@@ -31,6 +32,7 @@ let scheduledTask = cron.schedule('*/10 * * * *', () => {
 
 
 eventEmitter.on('runWhatsappCron', async () => {
+
     try {
         if (scheduledTask) {
             scheduledTask.start();

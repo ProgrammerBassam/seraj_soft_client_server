@@ -22,6 +22,8 @@ async function initSocket(server) {
 
                 eventEmitter.emit('getProfileData');
 
+
+
                 // Check for existing connection and disconnect if found
                 if (connectedClients.has(macAddress)) {
                     const existingSocket = connectedClients.get(macAddress);

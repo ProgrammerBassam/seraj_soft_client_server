@@ -1,5 +1,6 @@
 const { executePost } = require('../../utils/request.utils')
 const { saveInCache, getValue } = require('../../utils/cache.services')
+const { currentVersion } = require('../../utils/variables_globale')
 
 const GetClientData = async () => {
     try {
@@ -33,7 +34,7 @@ const UpdateIpAddress = async ({ currentIp }) => {
 const GetFeatures = async () => {
     try {
 
-        const serverVersion = "1.0.3"
+        const serverVersion = currentVersion
 
         const params = { server_version: serverVersion }
         const result = await executePost("http://212.38.94.227:3005/api/v1/server/get-features", params)
