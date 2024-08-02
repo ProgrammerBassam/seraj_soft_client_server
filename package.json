@@ -1,6 +1,6 @@
 {
   "name": "seraj_soft_client_server",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Seraj Soft API",
   "main": "main.prod.js",
   "scripts": {
@@ -70,5 +70,9 @@
     "electron-is-dev": "^3.0.1",
     "env-cmd": "^10.1.0",
     "wait-on": "^7.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ProgrammerBassam/seraj_soft_client_server.git"
   }
 }
