@@ -13,7 +13,7 @@ const helmet = require('helmet');
 const timeout = require('connect-timeout');
 const cors = require('cors');
 const { getValue } = require('./utils/cache.services');
-require('./utils/check_ip_cron');
+ require('./utils/check_ip_cron');
 require('./utils/server_socket.js');
 require('./utils/check_data_cron');
 require('./utils/check_whatsapp_msgs_cron.js');
