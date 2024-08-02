@@ -1,10 +1,8 @@
-const { app, BrowserWindow, autoUpdater, dialog } = require('electron');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
-const log = require('electron-log');
+require('./server/server');
 
-autoUpdater.logger = log;
-autoUpdater.logger.transports.file.level = 'info';
-log.info('App starting...');
+const { updateElectronApp } = require('update-electron-app');
 
 let mainWindow;
 
@@ -24,16 +22,13 @@ function createWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
-
-    // Check for updates
-    autoUpdater.checkForUpdatesAndNotify();
 }
 
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit();
+       // app.quit();
     }
 });
 
@@ -43,30 +38,4 @@ app.on('activate', () => {
     }
 });
 
-autoUpdater.on('update-available', () => {
-    log.info('Update available.');
-    dialog.showMessageBox({
-        type: 'info',
-        title: 'Update available',
-        message: 'A new version is available. Downloading now...',
-        buttons: ['OK']
-    });
-});
-
-autoUpdater.on('update-downloaded', () => {
-    log.info('Update downloaded.');
-    dialog.showMessageBox({
-        type: 'info',
-        title: 'Update ready',
-        message: 'A new version is ready. Restart now?',
-        buttons: ['Yes', 'Later']
-    }).then(result => {
-        if (result.response === 0) {
-            autoUpdater.quitAndInstall(false, true);
-        }
-    });
-});
-
-autoUpdater.on('error', (error) => {
-    log.error('Error in auto-updater:', error);
-});
+updateElectronApp();

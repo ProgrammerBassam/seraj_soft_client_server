@@ -4,23 +4,38 @@ const { Boom } = require("@hapi/boom");
 const qrcode = require("qrcode");
 const logger = require('./logger')
 const fs = require('fs').promises;
+const path = require('path');
+const { app } = require('electron'); // Assuming you're using Electron
+
+const dataDirectory = path.join(app.getPath('userData'), 'myAppData');
+const whatsappFilePath = path.join(dataDirectory, 'session_auth_info');
 
 let sock;
 let qrDinamic;
 let soket;
 
+async function ensureDirectoryExists(directoryPath) {
+    try {
+        await fs.mkdir(directoryPath, { recursive: true });
+    } catch (err) {
+        logger.logError(`Error creating directory: ${err}`);
+    }
+}
+
 async function deleteSessionFolder() {
     try {
-        await fs.rm("session_auth_info", { recursive: true, force: true });
-        logger.logError('تم حذف بيانات الإتصال بالواتساب')
+        await fs.rm(whatsappFilePath, { recursive: true, force: true });
+        logger.logSuccess('تم حذف بيانات الإتصال بالواتساب');
     } catch (err) {
-        logger.logError('حصلت مشكلة عند حذف إتصال الواتس اب ' + err)
+        logger.logError('حصلت مشكلة عند حذف إتصال الواتس اب ' + err);
     }
 }
 
 async function connectToWhatsApp() {
     try {
-        const { state, saveCreds } = await useMultiFileAuthState("session_auth_info");
+        await ensureDirectoryExists(dataDirectory);
+        
+        const { state, saveCreds } = await useMultiFileAuthState(whatsappFilePath);
         sock = makeWASocket({
             printQRInTerminal: false,
             auth: state,

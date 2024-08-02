@@ -1,6 +1,10 @@
 const fs = require('fs');
-const whatsappFilePath = 'failed_whatsapp.txt';
-const smsFilePath = 'failed_sms.txt';
+const path = require('path');
+const { app } = require('electron'); // Assuming you're using Electron
+
+const dataDirectory = path.join(app.getPath('userData'), 'myAppData');
+const whatsappFilePath = path.join(dataDirectory, 'failed_whatsapp.txt');
+const smsFilePath = path.join(dataDirectory, 'failed_sms.txt');
 
 // Function to check if the file exists, and create it if not
 function ensureFileExists(filePath, callback) {
@@ -8,7 +12,10 @@ function ensureFileExists(filePath, callback) {
         if (err) {
             // File does not exist, create it
             fs.writeFile(filePath, '', (err) => {
-                if (err) throw err;
+                if (err) {
+                    console.error('Error creating file:', err);
+                    return;
+                }
                 console.log('File created.');
                 callback();
             });
@@ -22,11 +29,14 @@ function ensureFileExists(filePath, callback) {
 // Function to check if the file contains the specific line
 function fileContainsLine(filePath, lineToCheck, callback) {
     fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err && err.code === 'ENOENT') {
-            // File doesn't exist
-            callback(false);
-        } else if (err) {
-            throw err;
+        if (err) {
+            if (err.code === 'ENOENT') {
+                // File doesn't exist
+                callback(false);
+            } else {
+                console.error('Error reading file:', err);
+                callback(false);
+            }
         } else {
             const lines = data.trim().split('\n');
             const exists = lines.includes(lineToCheck);
@@ -43,8 +53,11 @@ function appendToFileIfNotExists(filePath, receipt, msg) {
             if (!exists) {
                 const line = `${lineToCheck}\n`;
                 fs.appendFile(filePath, line, (err) => {
-                    if (err) throw err;
-                    console.log('Line appended to file!');
+                    if (err) {
+                        console.error('Error appending to file:', err);
+                    } else {
+                        console.log('Line appended to file!');
+                    }
                 });
             } else {
                 console.log('Line already exists in file.');
@@ -62,7 +75,8 @@ function readFileToList(filePath, callback) {
                 console.log('File does not exist.');
                 callback([]);
             } else {
-                throw err;
+                console.error('Error reading file:', err);
+                callback([]);
             }
         } else {
             const lines = data.trim().split('\n');
@@ -80,13 +94,10 @@ function readFileToList(filePath, callback) {
                 }
             });
 
-
             callback(list);
         }
     });
 }
-
-
 
 module.exports = {
     appendToFileIfNotExists,

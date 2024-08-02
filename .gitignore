@@ -8,3 +8,6 @@ session_auth_info
 *.exe
 
 out/
+dist/
+
+.env

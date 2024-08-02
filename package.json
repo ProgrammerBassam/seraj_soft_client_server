@@ -2,25 +2,23 @@
   "name": "seraj_soft_client_server",
   "version": "1.0.3",
   "description": "Seraj Soft API",
-  "main": "main.js",
+  "main": "main.prod.js",
   "scripts": {
+    "dev": "node server/server.js",
     "start": "electron-forge start",
-    "electron-start": "concurrently \"npm run start\" \"wait-on http://localhost:65531 && electron .\"",
-    "electron-start-prod": "concurrently \"npm run start\" \"wait-on http://localhost:65531 && electron . --no-console --main=main.prod.js\"",
-    "dist": "npm run build && electron-builder",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make -verbose",
+    "publish": "electron-forge publish"
   },
   "build": {
     "appId": "com.serajSoft.clientServer",
-    "files": [
-      "public/**/*",
-      "main.prod.js",
-      "server/server.js",
-      "package.json"
-    ],
+    "productName": "SerajSoft",
+    "description": "Seraj Soft API for client-server applications",
     "directories": {
       "buildResources": "assets"
+    },
+    "win": {
+      "icon": "assets/icon.ico"
     }
   },
   "keywords": [],
@@ -28,7 +26,6 @@
   "license": "ISC",
   "dependencies": {
     "@sentry/node": "^8.22.0",
-    "@sentry/profiling-node": "^8.22.0",
     "@whiskeysockets/baileys": "github:WhiskeySockets/Baileys",
     "body-parser": "^1.20.2",
     "cache-manager": "^5.7.4",
@@ -51,7 +48,8 @@
     "qrcode-terminal": "^0.12.0",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
-    "superagent": "^9.0.2"
+    "superagent": "^9.0.2",
+    "update-electron-app": "^3.0.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.4.0",
@@ -61,9 +59,12 @@
     "@electron-forge/maker-zip": "^7.4.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron-forge/plugin-local-electron": "^7.4.0",
+    "@electron-forge/publisher-github": "^7.4.0",
     "@electron/fuses": "^1.8.0",
     "concurrently": "^8.2.2",
     "electron": "^31.3.1",
+    "electron-builder": "^24.13.3",
     "electron-is-dev": "^3.0.1",
     "wait-on": "^7.2.0"
   }
