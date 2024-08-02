@@ -9,7 +9,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
-    "build": "nexe -c nexe.config.js --build --verbose"
+    "build": "nexe -c nexe.config.js --build --verbose --resource app.manifest"
   },
   "keywords": [],
   "author": "Seraj Soft",
