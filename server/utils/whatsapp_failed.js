@@ -3,8 +3,8 @@ const path = require('path');
 const { app } = require('electron'); // Assuming you're using Electron
 
 const dataDirectory = path.join(app.getPath('userData'), 'myAppData');
-const whatsappFilePath = path.join(dataDirectory, 'failed_whatsapp.txt');
-const smsFilePath = path.join(dataDirectory, 'failed_sms.txt');
+const whatsappFilePath = path.join(dataDirectory, 'failed_whatsapp1.txt');
+const smsFilePath = path.join(dataDirectory, 'failed_sms1.txt');
 
 // Function to check if the file exists, and create it if not
 function ensureFileExists(filePath, callback) {
