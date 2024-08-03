@@ -5,6 +5,11 @@ const { readFileToList, whatsappFilePath } = require('./whatsapp_failed');
 const { executeGet } = require('./request.utils');
 const { isWhatsappConnected } = require('./whatssapp.service')
 
+// Define a function to validate the receipt
+function isValidReceipt(receipt) {
+    // Ensure receipt is a string and matches the criteria
+    return typeof receipt === 'string' && /^7\d{0,8}$/.test(receipt);
+}
 
 // Define the cron job without starting it immediately
 let scheduledTask = cron.schedule('*/1 * * * *', () => {
@@ -17,8 +22,10 @@ let scheduledTask = cron.schedule('*/1 * * * *', () => {
                     const receipt = item['receipt']
                     const msg = item['msg']
 
-                    await executeGet("http://localhost:65531/api/v1/messages/whatsapp?receipt=" + receipt + "&msg=" + msg)
-                    await new Promise(resolve => setTimeout(resolve, 10000));
+                    if (isValidReceipt(receipt)) {
+                        await executeGet("http://localhost:65531/api/v1/messages/whatsapp?receipt=" + receipt + "&msg=" + msg)
+                        await new Promise(resolve => setTimeout(resolve, 10000));
+                    }
                 }
             }
         });
