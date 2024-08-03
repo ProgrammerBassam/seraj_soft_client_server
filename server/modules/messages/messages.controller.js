@@ -24,6 +24,15 @@ const SendSms = async (req, res) => {
             return response(res, 200, { success: true })
         }
 
+        const docId = await getValue({ key: "doc_id" })
+
+        if (!docId) {
+            logger.logError('تم حفظ معلومات الرسالة سيتم محاولة إعادة إرسالها مره أخرى')
+
+            appendToFileIfNotExists(whatsappFilePath, receipt, msg);
+            return response(res, 200, { success: true })
+        }
+
 
         if (canUseSms) {
             logger.logInfo('يتم إرسال رساله نصية إلى الرقم ' + title + '\nالنص المكتوب :' + body)
@@ -70,6 +79,15 @@ const SendWhatsApp = async (req, res) => {
     try {
         const cnaUseWhatsapp = await getValue({ key: 'can_use_whatsapp' })
         logger.logInfo('يتم إرسال رساله واتساب إلى الرقم ' + receipt + '\nالنص المكتوب :' + msg)
+
+        const docId = await getValue({ key: "doc_id" })
+
+        if (!docId) {
+            logger.logError('تم حفظ معلومات الرسالة سيتم محاولة إعادة إرسالها مره أخرى')
+
+            appendToFileIfNotExists(whatsappFilePath, receipt, msg);
+            return response(res, 200, { success: true })
+        }
 
         if (cnaUseWhatsapp) {
 
