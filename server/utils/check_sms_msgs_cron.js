@@ -9,7 +9,7 @@ const { getValue } = require('./cache.services');
 // Define the cron job without starting it immediately
 let scheduledTask = cron.schedule('*/10 * * * *', async () => {
 
-    const token = await getValue({ key: 'token' })
+    const token = await getValue({ key: 'onesignal_token' })
 
     if (token) {
         readFileToList(smsFilePath, async (list) => {

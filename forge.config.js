@@ -1,7 +1,12 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const { utils: { fromBuildIdentifier } } = require('@electron-forge/core');
 
 module.exports = {
+  buildIdentifier: 'prod',
+  packagerConfig: {
+    appBundleId: fromBuildIdentifier({  prod: 'com.serajSoft.clientServer' })
+  },
   publishers: [
     {
       name: '@electron-forge/publisher-github',
@@ -11,7 +16,8 @@ module.exports = {
           name: 'seraj_soft_client_server'
         },
         prerelease: false,
-        draft: true
+        draft: true,
+        generateReleaseNotes: true
       }
     }
   ],

@@ -1,6 +1,6 @@
 {
   "name": "seraj_soft_client_server",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Seraj Soft API",
   "main": "main.prod.js",
   "scripts": {
@@ -15,10 +15,20 @@
     "productName": "SerajSoft",
     "description": "Seraj Soft API for client-server applications",
     "directories": {
-      "buildResources": "assets"
+      "buildResources": "assets",
+      "output": "dist"
     },
     "win": {
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "target": "nsis",
+      "nsis": {
+        "oneClick": false,
+        "perMachine": true,
+        "allowToChangeInstallationDirectory": true,
+        "createDesktopShortcut": true,
+        "createStartMenuShortcut": true,
+        "defaultInstallPath": "E:\\NEWACC.1.O.001\\seraj_soft_client_server"
+      }
     }
   },
   "keywords": [],
@@ -68,6 +78,7 @@
     "electron": "^31.3.1",
     "electron-builder": "^24.13.3",
     "electron-is-dev": "^3.0.1",
+    "electron-winstaller": "^5.4.0",
     "env-cmd": "^10.1.0",
     "wait-on": "^7.2.0"
   },

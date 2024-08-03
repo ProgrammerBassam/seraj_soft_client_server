@@ -5,7 +5,7 @@ async function getConfig() {
     const username = await getValue({ key: 'oracle_username' })
     const password = await getValue({ key: 'oracle_password' })
     const oracleIp = "127.0.0.1"
-    const oraclePort = await getValue({ key: 'oracle_port' })
+    const oraclePort = "1521"//await getValue({ key: 'oracle_port' })
     const oracleBranch = await getValue({ key: 'oracle_branch' })
 
     const connectString = oracleIp + ':' + oraclePort + '/' + oracleBranch
