@@ -14,9 +14,9 @@ function ensureFileExists(filePath, callback) {
             fs.writeFile(filePath, '', (err) => {
                 if (err) {
                     console.error('Error creating file:', err);
-                    return;
+                } else {
+                    console.log('File created.');
                 }
-                console.log('File created.');
                 callback();
             });
         } else {
@@ -38,8 +38,9 @@ function fileContainsLine(filePath, lineToCheck, callback) {
                 callback(false);
             }
         } else {
-            const lines = data.trim().split('\n');
-            const exists = lines.includes(lineToCheck);
+            const lines = data.split(/\r?\n/); // Handle both \n and \r\n line endings
+            const escapedLineToCheck = lineToCheck.replace(/\|/g, '\\|'); // Escape pipe characters
+            const exists = lines.some(line => line.replace(/\|/g, '\\|') === escapedLineToCheck);
             callback(exists);
         }
     });
@@ -48,7 +49,8 @@ function fileContainsLine(filePath, lineToCheck, callback) {
 // Function to append a line to the file if it doesn't exist
 function appendToFileIfNotExists(filePath, receipt, msg) {
     ensureFileExists(filePath, () => {
-        const lineToCheck = `${receipt},${msg}`;
+        const escapedMsg = msg.replace(/\|/g, '\\|'); // Escape pipe characters
+        const lineToCheck = `${receipt}|${escapedMsg}`;
         fileContainsLine(filePath, lineToCheck, (exists) => {
             if (!exists) {
                 const line = `${lineToCheck}\n`;
@@ -79,9 +81,10 @@ function readFileToList(filePath, callback) {
                 callback([]);
             }
         } else {
-            const lines = data.trim().split('\n');
+            const lines = data.split(/\r?\n/); // Handle both \n and \r\n line endings
             const list = lines.map(line => {
-                const [receipt, msg] = line.split(',');
+                const [receipt, ...msgParts] = line.split('|');
+                const msg = msgParts.join('|').replace(/\\\|/g, '|'); // Unescape pipe characters
                 return { receipt, msg };
             });
 
