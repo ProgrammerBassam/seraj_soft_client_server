@@ -29,7 +29,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-         setupIcon: 'C:/Users/baxco/projects/seraj_soft_client_server/assets/icon.ico'
+        
       },
     },
     {
