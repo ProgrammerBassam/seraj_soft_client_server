@@ -115,6 +115,7 @@ eventEmitter.on('getProfileData', async () => {
             if (canUseApi) {
                 eventEmitter.emit('initServerSocket');
                 eventEmitter.emit('runIpChecker');
+                eventEmitter.emit('runServerSocketChecker');
             }
 
             if (canUseWhatsapp) {
