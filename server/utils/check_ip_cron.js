@@ -5,6 +5,7 @@ const logger = require('./logger')
 const { executePost } = require('./request.utils')
 const eventEmitter = require('./events');
 
+let isTaskRunning = false;
 
 async function checkIpAddress() {
 
@@ -38,6 +39,12 @@ let scheduledTask = cron.schedule('* * * * *', () => {
 
 eventEmitter.on('runIpChecker', async () => {
     try {
+        if (isTaskRunning) {
+            return;
+        }
+
+        isTaskRunning = true;
+
         if (scheduledTask) {
             scheduledTask.start();
         }

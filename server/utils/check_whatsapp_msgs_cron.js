@@ -5,6 +5,8 @@ const { readFileToList, whatsappFilePath } = require('./whatsapp_failed');
 const { executeGet } = require('./request.utils');
 const { isWhatsappConnected } = require('./whatssapp.service')
 
+let isTaskRunning = false;
+
 // Define a function to validate the receipt
 function isValidReceipt(receipt) {
     // Ensure receipt is a string and matches the criteria
@@ -41,6 +43,12 @@ let scheduledTask = cron.schedule('*/1 * * * *', () => {
 eventEmitter.on('runWhatsappCron', async () => {
 
     try {
+        if (isTaskRunning) {
+            return;
+        }
+
+        isTaskRunning = true;
+        
         if (scheduledTask) {
             scheduledTask.start();
             logger.logInfo('بدء تشغيل فاحص رسائل الواتساب الفاشلة');

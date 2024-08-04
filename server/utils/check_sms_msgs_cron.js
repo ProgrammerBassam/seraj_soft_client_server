@@ -5,6 +5,7 @@ const { readFileToList, smsFilePath } = require('./whatsapp_failed');
 const { executeGet } = require('./request.utils');
 const { getValue } = require('./cache.services');
 
+let isTaskRunning = false;
 
 // Define the cron job without starting it immediately
 let scheduledTask = cron.schedule('*/10 * * * *', async () => {
@@ -34,6 +35,12 @@ let scheduledTask = cron.schedule('*/10 * * * *', async () => {
 
 eventEmitter.on('runSmsCron', async () => {
     try {
+        if (isTaskRunning) {
+            return;
+        }
+
+        isTaskRunning = true;
+
         if (scheduledTask) {
             scheduledTask.start();
             logger.logInfo('بدء تشغيل فاحص رسائل الإس إم إس الفاشلة');

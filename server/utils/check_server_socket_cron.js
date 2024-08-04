@@ -3,6 +3,7 @@ const { getValue } = require('./cache.services');
 const logger = require('./logger')
 const eventEmitter = require('./events');
 
+let isTaskRunning = false;
 
 async function checkServerSocket() {
 
@@ -19,7 +20,7 @@ async function checkServerSocket() {
 }
 
 // Define the cron job without starting it immediately
-let scheduledTask = cron.schedule('*/10 * * * *', () => {
+let scheduledTask = cron.schedule('*/1 * * * *', () => {
 
     checkServerSocket().catch(err => {
         logger.logError('خطأ عند فحص الإتصال بالشبكة الخارجية' + err)
@@ -32,6 +33,12 @@ let scheduledTask = cron.schedule('*/10 * * * *', () => {
 
 eventEmitter.on('runServerSocketChecker', async () => {
     try {
+        if (isTaskRunning) {
+            return;
+        }
+
+        isTaskRunning = true;
+        
         if (scheduledTask) {
             scheduledTask.start();
         }

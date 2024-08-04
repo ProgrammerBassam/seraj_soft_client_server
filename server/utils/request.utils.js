@@ -38,7 +38,7 @@ function executePost(url, params) {
 eventEmitter.on('getProfileData', async () => {
     try {
 
-        if (await getValue({ key: 'is_registerd' }) == true) {
+       /* if (await getValue({ key: 'is_registerd' }) == true) {
 
             const canUserSms = await getValue({ key: 'can_use_sms' })
             const canUseWhatsapp = await getValue({ key: 'can_use_whatsapp' })
@@ -54,7 +54,7 @@ eventEmitter.on('getProfileData', async () => {
             }
 
             return;
-        }
+        }*/
 
         const result = await executePost("http://localhost:65531/api/v1/auth/client-data", {})
         const data = result.body.data
