@@ -56,7 +56,8 @@ class SocketManager {
             logger.logError('تم قطع الإتصال مع سرفرات سراج سوفت بسبب ' + reason);
             eventEmitter.emit('emitCustom', { key: 'isConnectedToServer', value: 'لا' });
             if (reason === 'io server disconnect') {
-                this.socket.connect();
+                // Optionally add a retry limit or delay
+                setTimeout(() => this.socket.connect(), 1000);
             }
         });
 
