@@ -3,6 +3,7 @@ const iconv = require('iconv-lite')
 const { getConfig } = require('../../database/dbconfig')
 const { saveInCache, getValue } = require('../../utils/cache.services')
 const logger = require('../../utils/logger.js')
+const Sentry = require('@sentry/node')
 
 let oracleClientInitialized = false;
 
@@ -61,12 +62,14 @@ const SearchChartAcc = async ({ query }) => {
         });
     } catch (err) {
         logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العملاء ' + err)
+        Sentry.captureMessage(err)
     } finally {
         if (connection) {
             try {
                 await connection.close();
             } catch (err) {
                 logger.logError('حصل 2 خطأ عن جلب بيانات كشف حساب العملاء ' + err)
+                Sentry.captureMessage(err)
             }
         }
     }
@@ -174,12 +177,14 @@ const GetReportByAccNo = async ({ acc_no, start_date, end_date }) => {
         result.currency = rows[0]['CUR_NAME'] ?? "يمني";
     } catch (err) {
         logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+        Sentry.captureMessage(err)
     } finally {
         if (connection) {
             try {
                 await connection.close();
             } catch (err) {
                 logger.logError('حصل  2 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+                Sentry.captureMessage(err)
             }
         }
     }
@@ -249,12 +254,14 @@ ORDER BY ACCOUNTS.SALES_BILL.YEAR DESC ,ACCOUNTS.SALES_BILL.MANUAL_BILL_NO
 
     } catch (err) {
         logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+        Sentry.captureMessage(err)
     } finally {
         if (connection) {
             try {
                 await connection.close();
             } catch (err) {
                 logger.logError('حصل  2 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+                Sentry.captureMessage(err)
             }
         }
     }
@@ -304,12 +311,14 @@ GROUP BY ACCOUNTS.SALES_BILL.ACC_NO, ACCOUNTS.CHART_ACC.ACC_NAME
 
     } catch (err) {
         logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+        Sentry.captureMessage(err)
     } finally {
         if (connection) {
             try {
                 await connection.close();
             } catch (err) {
                 logger.logError('حصل  2 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+                Sentry.captureMessage(err)
             }
         }
     }
@@ -355,12 +364,14 @@ const GetCurrencies = async () => {
 
     } catch (err) {
         logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+        Sentry.captureMessage(err)
     } finally {
         if (connection) {
             try {
                 await connection.close();
             } catch (err) {
                 logger.logError('حصل  2 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+                Sentry.captureMessage(err)
             }
         }
     }
