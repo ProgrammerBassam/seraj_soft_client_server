@@ -23,7 +23,12 @@ const SearchChartAcc = async (req, res) => {
         }
 
     } catch (error) {
-        return response(res, 500, error.message)
+        if (requestId) {
+            return response(res, 500, { requestId: requestId, responseData: error.message })
+        } else {
+            return response(res, 500, error.message)
+        }
+
     }
 }
 
@@ -42,7 +47,11 @@ const GetReportByAccNo = async (req, res) => {
 
 
     } catch (error) {
-        return response(res, 500, error.message)
+        if (requestId) {
+            return response(res, 500, { requestId: requestId, responseData: error.message })
+        } else {
+            return response(res, 500, error.message)
+        }
     }
 }
 
@@ -62,7 +71,11 @@ const GetAllSales = async (req, res) => {
 
 
     } catch (error) {
-        return response(res, 500, error.message)
+        if (requestId) {
+            return response(res, 500, { requestId: requestId, responseData: error.message })
+        } else {
+            return response(res, 500, error.message)
+        }
     }
 }
 
@@ -82,7 +95,11 @@ const GetAllSalesAccounts = async (req, res) => {
 
 
     } catch (error) {
-        return response(res, 500, error.message)
+        if (requestId) {
+            return response(res, 500, { requestId: requestId, responseData: error.message })
+        } else {
+            return response(res, 500, error.message)
+        }
     }
 }
 
@@ -102,7 +119,11 @@ const GetCurrencies = async (req, res) => {
 
 
     } catch (error) {
-        return response(res, 500, error.message)
+        if (requestId) {
+            return response(res, 500, { requestId: requestId, responseData: error.message })
+        } else {
+            return response(res, 500, error.message)
+        }
     }
 }
 
