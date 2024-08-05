@@ -3,11 +3,11 @@ const response = require('../../utils/responses.js')
 const logger = require('../../utils/logger.js')
 
 const SearchChartAcc = async (req, res) => {
+
+    const { requestId } = req.query
+    const { query } = req.body
+
     try {
-
-        const { requestId } = req.query
-        const { query } = req.body
-
         if (requestId) {
             logger.logInfo('الإستعلام عن كشف الحساب عن طريق الإنترنت')
         } else {
@@ -33,10 +33,14 @@ const SearchChartAcc = async (req, res) => {
 }
 
 const GetReportByAccNo = async (req, res) => {
+
+    const { requestId } = req.query
+    const { acc_no, start_date, end_date } = req.body
+
+
     try {
 
-        const { requestId } = req.query
-        const { acc_no, start_date, end_date } = req.body
+
 
         const result = await service.GetReportByAccNo({ acc_no, start_date, end_date })
         if (requestId) {
@@ -57,11 +61,11 @@ const GetReportByAccNo = async (req, res) => {
 
 // Sales
 const GetAllSales = async (req, res) => {
+
+    const { requestId } = req.query
+    const { account_no, bill_type, start_date, end_date } = req.body
+
     try {
-
-        const { requestId } = req.query
-        const { account_no, bill_type, start_date, end_date } = req.body
-
         const result = await service.GetAllSales({ account_no, bill_type, start_date, end_date })
         if (requestId) {
             return res.status(200).json({ requestId: requestId, responseData: result })
@@ -81,10 +85,12 @@ const GetAllSales = async (req, res) => {
 
 // Get All Sales Accounts
 const GetAllSalesAccounts = async (req, res) => {
+    const { requestId } = req.query
+    const { currency_no } = req.body
+
     try {
 
-        const { requestId } = req.query
-        const { currency_no } = req.body
+
 
         const result = await service.GetAllSalesAccounts({ currency_no })
         if (requestId) {
@@ -105,11 +111,10 @@ const GetAllSalesAccounts = async (req, res) => {
 
 // Currencies
 const GetCurrencies = async (req, res) => {
+
+    const { requestId } = req.query
+
     try {
-
-        const { requestId } = req.query
-
-
         const result = await service.GetCurrencies()
         if (requestId) {
             return res.status(200).json({ requestId: requestId, responseData: result })
