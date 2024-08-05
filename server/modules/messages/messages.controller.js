@@ -29,7 +29,7 @@ const SendSms = async (req, res) => {
         if (!docId) {
             logger.logError('تم حفظ معلومات الرسالة سيتم محاولة إعادة إرسالها مره أخرى')
 
-            appendToFileIfNotExists(whatsappFilePath, receipt, msg);
+            appendToFileIfNotExists(smsFilePath, title, body);
             return response(res, 200, { success: true })
         }
 
