@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { app } = require('electron'); // Assuming you're using Electron
+const iconv = require('iconv-lite');
 
 const dataDirectory = path.join(app.getPath('userData'), 'myAppData');
 const whatsappFilePath = path.join(dataDirectory, 'failed_whatsapp1.txt');
@@ -48,8 +49,11 @@ function fileContainsLine(filePath, lineToCheck, callback) {
 
 // Function to append a line to the file if it doesn't exist
 function appendToFileIfNotExists(filePath, receipt, msg) {
+    const encodedBytes = iconv.encode(msg, 'windows-1256');
+    const decodedString = iconv.decode(encodedBytes, 'ISO-8859-1');
+
     ensureFileExists(filePath, () => {
-        const escapedMsg = msg.replace(/\|/g, '\\|'); // Escape pipe characters
+        const escapedMsg = decodedString.replace(/\|/g, '\\|'); // Escape pipe characters
         const lineToCheck = `${receipt}|${escapedMsg}`;
         fileContainsLine(filePath, lineToCheck, (exists) => {
             if (!exists) {
@@ -108,3 +112,4 @@ module.exports = {
     whatsappFilePath,
     smsFilePath
 };
+
