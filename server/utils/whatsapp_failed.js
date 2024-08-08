@@ -47,12 +47,12 @@ function fileContainsLine(filePath, lineToCheck, callback) {
     });
 }
 
-// Function to append a line to the file if it doesn't exist
 function appendToFileIfNotExists(filePath, receipt, msg) {
     const encodedBytes = iconv.encode(msg, 'windows-1256');
     const decodedString = iconv.decode(encodedBytes, 'ISO-8859-1');
 
     ensureFileExists(filePath, () => {
+        // Ensure message is properly escaped
         const escapedMsg = decodedString.replace(/\|/g, '\\|'); // Escape pipe characters
         const lineToCheck = `${receipt}|${escapedMsg}`;
         fileContainsLine(filePath, lineToCheck, (exists) => {
@@ -72,7 +72,6 @@ function appendToFileIfNotExists(filePath, receipt, msg) {
     });
 }
 
-// Function to read the file and parse it into a list
 function readFileToList(filePath, callback) {
     fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
@@ -90,7 +89,7 @@ function readFileToList(filePath, callback) {
                 const [receipt, ...msgParts] = line.split('|');
                 const msg = msgParts.join('|').replace(/\\\|/g, '|'); // Unescape pipe characters
                 return { receipt, msg };
-            });
+            }).filter(entry => entry.receipt && entry.msg); // Filter out empty entries
 
             // Remove the file after reading its contents
             fs.unlink(filePath, (unlinkErr) => {
