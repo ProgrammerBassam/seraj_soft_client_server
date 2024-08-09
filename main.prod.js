@@ -16,6 +16,9 @@ function createWindow() {
         },
     });
 
+    // Set the locale to Arabic
+    app.setLocale('ar');
+
     const startUrl = "http://localhost:65531";
     mainWindow.loadURL(startUrl);
 
@@ -28,7 +31,7 @@ app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-       // app.quit();
+        // app.quit();
     }
 });
 

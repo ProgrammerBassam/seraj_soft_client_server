@@ -11,3 +11,5 @@ out/
 dist/
 
 .env
+
+build/
