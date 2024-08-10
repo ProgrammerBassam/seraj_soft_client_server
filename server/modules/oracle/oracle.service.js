@@ -77,7 +77,6 @@ const SearchChartAcc = async ({ query }) => {
     return result;
 };
 
-
 const GetReportByAccNo = async ({ acc_no, start_date, end_date }) => {
     await initializeOracleClient();
 
@@ -326,6 +325,78 @@ GROUP BY ACCOUNTS.SALES_BILL.ACC_NO, ACCOUNTS.CHART_ACC.ACC_NAME
     return result;
 };
 
+const GetSaleBill = async ({ sale_bill_id, year }) => {
+    await initializeOracleClient();
+
+    let connection;
+    let result = [];
+
+    try {
+        // Timeout for getting the connection
+        const getConnectionTimeout = createTimeoutPromise(15000, 'getConnection timed out');
+        connection = await Promise.race([
+            oracledb.getConnection(await getConfig()),
+            getConnectionTimeout,
+        ]);
+
+        const checkSql = `
+      SELECT ACCOUNTS.SALES_BILL.MANUAL_BILL_NO, TO_CHAR(ACCOUNTS.SALES_BILL.DAT,'DD/MM/YYYY') DAT, 
+ACCOUNTS.SALES_BILL.BILL_TYPE, ACCOUNTS.SALES_BILL.ACC_NO, 
+ACCOUNTS.CHART_ACC.ACC_NAME, ACCOUNTS.SANFS.SANF_NAME, ACCOUNTS.PARTIAL_SANFS.UNIT_NO, 
+ACCOUNTS.UNITS.UNIT_NAME, ACCOUNTS.SALES_BILL.NET, ACCOUNTS.SALES_BILL.DETAILES, 
+ACCOUNTS.SALES_BILL.STORE_NO, ACCOUNTS.SALES_BILL.DISCOUNT, ACCOUNTS.SALES_BILL.TOTAL, 
+ACCOUNTS.SALES_DETAILES.SANF_PRICE, ACCOUNTS.SALES_DETAILES.QTY, 
+ACCOUNTS.SALES_DETAILES.TOTAL SUB_TOTAL, ACCOUNTS.CURRENCY.CUR_NAME
+FROM ACCOUNTS.SALES_BILL, ACCOUNTS.SALES_DETAILES, ACCOUNTS.SANFS, ACCOUNTS.UNITS, 
+ACCOUNTS.CHART_ACC, ACCOUNTS.PARTIAL_SANFS, ACCOUNTS.CURRENCY
+WHERE SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=ACCOUNTS.CURRENCY.CUR_NO
+ AND  ((ACCOUNTS.SALES_DETAILES.BILL_NO=ACCOUNTS.SALES_BILL.BILL_NO)
+ AND (ACCOUNTS.SALES_DETAILES.YEAR=ACCOUNTS.SALES_BILL.YEAR)
+ AND (ACCOUNTS.SALES_BILL.ACC_NO=ACCOUNTS.CHART_ACC.ACC_NO)
+ AND (ACCOUNTS.SANFS.SANF_NO=ACCOUNTS.SALES_DETAILES.SANF_NO)
+ AND (ACCOUNTS.PARTIAL_SANFS.SANF_NO=ACCOUNTS.SANFS.SANF_NO)
+ AND (ACCOUNTS.PARTIAL_SANFS.UNIT_NO=ACCOUNTS.UNITS.UNIT_NO)
+ AND (ACCOUNTS.PARTIAL_SANFS.CAP=ACCOUNTS.SALES_DETAILES.CAP))
+ AND (ACCOUNTS.SALES_BILL.BILL_NO = :bill_no1
+ AND ACCOUNTS.SALES_BILL.YEAR = :year1)
+ ORDER BY SALES_BILL.BILL_NO, SEQ
+`;
+
+        const checkBinds = { year1: year, bill_no1: sale_bill_id };
+        const options = { outFormat: oracledb.OUT_FORMAT_OBJECT };
+
+        const checkResult = await connection.execute(checkSql, checkBinds, options);
+
+        // Convert the encoding of the result rows
+        const rows = checkResult.rows.map((row) => {
+            const encodedAccNameBytes = iconv.encode(row.ACC_NAME, 'ISO-8859-1');
+            const decodedAccNameString = iconv.decode(encodedAccNameBytes, 'windows-1256');
+
+            return {
+                ...row,
+                //   ACC_NAME: decodedAccNameString,
+            };
+        });
+
+        result.push(...rows);
+
+    } catch (err) {
+        logger.logError('حصل  1 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+        Sentry.captureMessage(err)
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                logger.logError('حصل  2 خطأ عن جلب بيانات كشف حساب العميل ' + err)
+                Sentry.captureMessage(err)
+            }
+        }
+    }
+
+    return result;
+};
+
 const GetCurrencies = async () => {
     await initializeOracleClient();
 
@@ -379,4 +450,4 @@ const GetCurrencies = async () => {
     return result;
 };
 
-module.exports = { SearchChartAcc, GetReportByAccNo, GetAllSales, GetAllSalesAccounts, GetCurrencies }
+module.exports = { SearchChartAcc, GetReportByAccNo, GetAllSales, GetAllSalesAccounts, GetCurrencies, GetSaleBill }
