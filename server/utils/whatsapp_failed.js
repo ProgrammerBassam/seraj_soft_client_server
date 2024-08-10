@@ -48,12 +48,9 @@ function fileContainsLine(filePath, lineToCheck, callback) {
 }
 
 function appendToFileIfNotExists(filePath, receipt, msg) {
-    const encodedBytes = iconv.encode(msg, 'windows-1256');
-    const decodedString = iconv.decode(encodedBytes, 'ISO-8859-1');
-
     ensureFileExists(filePath, () => {
         // Ensure message is properly escaped
-        const escapedMsg = decodedString.replace(/\|/g, '\\|'); // Escape pipe characters
+        const escapedMsg = msg.replace(/\|/g, '\\|'); // Escape pipe characters
         const lineToCheck = `${receipt}|${escapedMsg}`;
         fileContainsLine(filePath, lineToCheck, (exists) => {
             if (!exists) {
