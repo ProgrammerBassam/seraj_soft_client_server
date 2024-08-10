@@ -118,13 +118,13 @@ eventEmitter.on('getProfileData', async () => {
                 eventEmitter.emit('runServerSocketChecker');
             }
 
-            if (canUseWhatsapp) {
-                eventEmitter.emit('runWhatsappCron');
-            }
+          //  if (canUseWhatsapp) {
+           //     eventEmitter.emit('runWhatsappCron');
+           // }
 
-            if (canUserSms) {
-                eventEmitter.emit('runSmsCron');
-            }
+          //  if (canUserSms) {
+           //     eventEmitter.emit('runSmsCron');
+           // }
 
             await executeGet("http://localhost:65531/api/v1/auth/get-features")
 
