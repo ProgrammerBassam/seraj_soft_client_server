@@ -7,7 +7,7 @@ const GetClientData = async () => {
 
         const macAddress = await getValue({ key: "mac_address" })
 
-        const params = { client_code: macAddress }
+        const params = { client_code: macAddress, current_version: currentVersion }
         const result = await executePost("http://212.38.94.227:3005/api/v1/server", params)
         return result.body
 

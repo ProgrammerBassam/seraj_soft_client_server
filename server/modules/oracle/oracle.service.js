@@ -205,25 +205,54 @@ const GetAllSales = async ({ account_no, bill_type, start_date, end_date }) => {
             getConnectionTimeout,
         ]);
 
-        const checkSql = `
-        SELECT ACCOUNTS.SALES_BILL.MANUAL_BILL_NO, 
-ACCOUNTS.SALES_BILL.BILL_TYPE, ACCOUNTS.CHART_ACC.ACC_NAME, 
-ACCOUNTS.SALES_BILL.NET, ACCOUNTS.SALES_BILL.DAT, ACCOUNTS.SALES_BILL.DETAILES, 
-ACCOUNTS.SALES_BILL.STORE_NO, ACCOUNTS.SALES_BILL.CUR_NO, ACCOUNTS.SALES_BILL.ACC_NO, 
-ACCOUNTS.SALES_BILL.ENTRY_NO, ACCOUNTS.CURRENCY.CUR_NAME
-FROM ACCOUNTS.SALES_BILL, 
-ACCOUNTS.SALES_DETAILES, ACCOUNTS.CHART_ACC, ACCOUNTS.CURRENCY
-WHERE SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=ACCOUNTS.CURRENCY.CUR_NO
-AND  ((ACCOUNTS.SALES_DETAILES.BILL_NO=ACCOUNTS.SALES_BILL.BILL_NO)
-AND (ACCOUNTS.SALES_DETAILES.YEAR=ACCOUNTS.SALES_BILL.YEAR)
-AND (ACCOUNTS.SALES_BILL.ACC_NO=ACCOUNTS.CHART_ACC.ACC_NO))
-AND ACCOUNTS.SALES_BILL.DAT  BETWEEN TO_DATE(:date1, 'dd-mon-yy') AND TO_DATE(:date2, 'dd-mon-yy')
-AND ACCOUNTS.SALES_BILL.BILL_TYPE = :billType
-AND ACCOUNTS.SALES_BILL.ACC_NO = :accountNo
-ORDER BY ACCOUNTS.SALES_BILL.YEAR DESC ,ACCOUNTS.SALES_BILL.MANUAL_BILL_NO
-`;
+        var checkSql
+        var checkBinds
 
-        const checkBinds = { accountNo: account_no, billType: bill_type, date1: start_date, date2: end_date };
+        if (bill_type == 3) {
+             checkSql = `
+            SELECT ACCOUNTS.SALES_BILL.MANUAL_BILL_NO, ACCOUNTS.SALES_BILL.BILL_NO, ACCOUNTS.SALES_BILL.YEAR,
+    ACCOUNTS.SALES_BILL.BILL_TYPE, ACCOUNTS.CHART_ACC.ACC_NAME, 
+    ACCOUNTS.SALES_BILL.NET, ACCOUNTS.SALES_BILL.DAT, ACCOUNTS.SALES_BILL.DETAILES, 
+    ACCOUNTS.SALES_BILL.STORE_NO, ACCOUNTS.SALES_BILL.CUR_NO, ACCOUNTS.SALES_BILL.ACC_NO, 
+    ACCOUNTS.SALES_BILL.ENTRY_NO, ACCOUNTS.CURRENCY.CUR_NAME
+    FROM ACCOUNTS.SALES_BILL, 
+    ACCOUNTS.SALES_DETAILES, ACCOUNTS.CHART_ACC, ACCOUNTS.CURRENCY
+    WHERE SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=ACCOUNTS.CURRENCY.CUR_NO
+    AND  ((ACCOUNTS.SALES_DETAILES.BILL_NO=ACCOUNTS.SALES_BILL.BILL_NO)
+    AND (ACCOUNTS.SALES_DETAILES.YEAR=ACCOUNTS.SALES_BILL.YEAR)
+    AND (ACCOUNTS.SALES_BILL.ACC_NO=ACCOUNTS.CHART_ACC.ACC_NO))
+    AND ACCOUNTS.SALES_BILL.DAT  BETWEEN TO_DATE(:date1, 'dd-mon-yy') AND TO_DATE(:date2, 'dd-mon-yy')
+    AND ACCOUNTS.SALES_BILL.ACC_NO = :accountNo
+    ORDER BY ACCOUNTS.SALES_BILL.YEAR DESC ,ACCOUNTS.SALES_BILL.MANUAL_BILL_NO
+    `;
+
+    checkBinds = { accountNo: account_no, date1: start_date, date2: end_date };
+    
+        } else {
+             checkSql = `
+            SELECT ACCOUNTS.SALES_BILL.MANUAL_BILL_NO, ACCOUNTS.SALES_BILL.BILL_NO, ACCOUNTS.SALES_BILL.YEAR,
+    ACCOUNTS.SALES_BILL.BILL_TYPE, ACCOUNTS.CHART_ACC.ACC_NAME, 
+    ACCOUNTS.SALES_BILL.NET, ACCOUNTS.SALES_BILL.DAT, ACCOUNTS.SALES_BILL.DETAILES, 
+    ACCOUNTS.SALES_BILL.STORE_NO, ACCOUNTS.SALES_BILL.CUR_NO, ACCOUNTS.SALES_BILL.ACC_NO, 
+    ACCOUNTS.SALES_BILL.ENTRY_NO, ACCOUNTS.CURRENCY.CUR_NAME
+    FROM ACCOUNTS.SALES_BILL, 
+    ACCOUNTS.SALES_DETAILES, ACCOUNTS.CHART_ACC, ACCOUNTS.CURRENCY
+    WHERE SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=ACCOUNTS.CURRENCY.CUR_NO
+    AND  ((ACCOUNTS.SALES_DETAILES.BILL_NO=ACCOUNTS.SALES_BILL.BILL_NO)
+    AND (ACCOUNTS.SALES_DETAILES.YEAR=ACCOUNTS.SALES_BILL.YEAR)
+    AND (ACCOUNTS.SALES_BILL.ACC_NO=ACCOUNTS.CHART_ACC.ACC_NO))
+    AND ACCOUNTS.SALES_BILL.DAT  BETWEEN TO_DATE(:date1, 'dd-mon-yy') AND TO_DATE(:date2, 'dd-mon-yy')
+    AND ACCOUNTS.SALES_BILL.BILL_TYPE = :billType
+    AND ACCOUNTS.SALES_BILL.ACC_NO = :accountNo
+    ORDER BY ACCOUNTS.SALES_BILL.YEAR DESC ,ACCOUNTS.SALES_BILL.MANUAL_BILL_NO
+    `;
+
+    checkBinds = { accountNo: account_no, billType: bill_type, date1: start_date, date2: end_date };
+    
+        }
+
+       
+         
         const options = { outFormat: oracledb.OUT_FORMAT_OBJECT };
 
         const checkResult = await connection.execute(checkSql, checkBinds, options);
@@ -342,7 +371,7 @@ const GetSaleBill = async ({ sale_bill_id, year }) => {
         const checkSql = `
       SELECT ACCOUNTS.SALES_BILL.MANUAL_BILL_NO, TO_CHAR(ACCOUNTS.SALES_BILL.DAT,'DD/MM/YYYY') DAT, 
 ACCOUNTS.SALES_BILL.BILL_TYPE, ACCOUNTS.SALES_BILL.ACC_NO, 
-ACCOUNTS.CHART_ACC.ACC_NAME, ACCOUNTS.SANFS.SANF_NAME, ACCOUNTS.PARTIAL_SANFS.UNIT_NO, 
+ACCOUNTS.CHART_ACC.ACC_NAME, ACCOUNTS.SANFS.SANF_NAME,  ACCOUNTS.SANFS.PART_NO, ACCOUNTS.PARTIAL_SANFS.UNIT_NO, 
 ACCOUNTS.UNITS.UNIT_NAME, ACCOUNTS.SALES_BILL.NET, ACCOUNTS.SALES_BILL.DETAILES, 
 ACCOUNTS.SALES_BILL.STORE_NO, ACCOUNTS.SALES_BILL.DISCOUNT, ACCOUNTS.SALES_BILL.TOTAL, 
 ACCOUNTS.SALES_DETAILES.SANF_PRICE, ACCOUNTS.SALES_DETAILES.QTY, 
@@ -359,7 +388,7 @@ WHERE SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=ACCOUNTS.CURRENCY.CUR_NO
  AND (ACCOUNTS.PARTIAL_SANFS.CAP=ACCOUNTS.SALES_DETAILES.CAP))
  AND (ACCOUNTS.SALES_BILL.BILL_NO = :bill_no1
  AND ACCOUNTS.SALES_BILL.YEAR = :year1)
- ORDER BY SALES_BILL.BILL_NO, SEQ
+ ORDER BY ACCOUNTS.SALES_BILL.BILL_NO, ACCOUNTS.SALES_DETAILES.SEQ
 `;
 
         const checkBinds = { year1: year, bill_no1: sale_bill_id };
@@ -372,9 +401,29 @@ WHERE SUBSTR(ACCOUNTS.SALES_BILL.ACC_NO, 4, 1)=ACCOUNTS.CURRENCY.CUR_NO
             const encodedAccNameBytes = iconv.encode(row.ACC_NAME, 'ISO-8859-1');
             const decodedAccNameString = iconv.decode(encodedAccNameBytes, 'windows-1256');
 
+            const encodedSanfNameBytes = iconv.encode(row.SANF_NAME, 'ISO-8859-1');
+            const decodedSanfNameString = iconv.decode(encodedSanfNameBytes, 'windows-1256');
+
+            const encodedUnitNameBytes = iconv.encode(row.UNIT_NAME, 'ISO-8859-1');
+            const decodedUnitNameString = iconv.decode(encodedUnitNameBytes, 'windows-1256');
+
+            const encodedDetailsBytes = iconv.encode(row.DETAILS, 'ISO-8859-1');
+            const decodedDetailsString = iconv.decode(encodedDetailsBytes, 'windows-1256');
+
+            const encodedCurNameBytes = iconv.encode(row.CUR_NAME, 'ISO-8859-1');
+            const decodedCurNameString = iconv.decode(encodedCurNameBytes, 'windows-1256');
+
+            const encodedDetailesBytes = iconv.encode(row.DETAILES, 'ISO-8859-1');
+            const decodedDetailEsString = iconv.decode(encodedDetailesBytes, 'windows-1256');
+
             return {
                 ...row,
-                //   ACC_NAME: decodedAccNameString,
+                ACC_NAME: decodedAccNameString,
+                SANF_NAME: decodedSanfNameString,
+                UNIT_NAME: decodedUnitNameString,
+                DETAILS: decodedDetailsString,
+                CUR_NAME: decodedCurNameString,
+                DETAILES: decodedDetailEsString
             };
         });
 
