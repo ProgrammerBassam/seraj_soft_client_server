@@ -10,6 +10,6 @@ oracleRouter.post('/get-sales-accounts', ctrl.GetAllSalesAccounts)
 oracleRouter.post('/get-all-sales', ctrl.GetAllSales)
 oracleRouter.post('/get-sale-bill', ctrl.GetSaleBill)
 
-oracleRouter.get('/get-currencies', ctrl.GetCurrencies)
+oracleRouter.post('/get-currencies', ctrl.GetCurrencies)
 
 module.exports = oracleRouter
