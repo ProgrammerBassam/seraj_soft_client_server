@@ -1,6 +1,6 @@
 {
   "name": "seraj_soft_client_server",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "Seraj Soft API",
   "main": "main.prod.js",
   "scripts": {
