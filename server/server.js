@@ -12,16 +12,16 @@ const { Server } = require('socket.io');
 const helmet = require('helmet');
 const timeout = require('connect-timeout');
 const cors = require('cors');
-const { getValue } = require('./utils/cache.services');
-require('./utils/check_ip_cron');
+const { getValue } = require('./utils/cache.services.js');
+require('./utils/check_ip_cron.js');
 require('./utils/server_socket.js');
-require('./utils/check_data_cron');
+require('./utils/check_data_cron.js');
 // require('./utils/check_whatsapp_msgs_cron.js');
 // require('./utils/check_sms_msgs_cron.js');
 require('./utils/check_server_socket_cron.js');
-const { initializeWhatsappService, updateQrs } = require('./utils/whatssapp.service');
-const { initSocket } = require('./utils/local_socket');
-const response = require('./utils/responses');
+const { initializeWhatsappService, updateQrs } = require('./utils/whatssapp.service.js');
+const { initSocket } = require('./utils/local_socket.js');
+const response = require('./utils/responses.js');
 const Sentry = require('@sentry/node');
 
 const app = express();
@@ -51,7 +51,7 @@ app.use(logger('common'));
 app.use('/api/v1', timeout('30s'));
 
 // Routes
-app.use('/api/v1', require('./routes/routes'));
+app.use('/api/v1', require('./routes/routes.js'));
 
 // Error handling
 app.use((err, req, res, next) => {

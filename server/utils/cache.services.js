@@ -1,9 +1,12 @@
-const { caching } = require("cache-manager")
+const { createCache, } = require("cache-manager")
 
 let memoryCache = null
 
-async function initMemoryCache() {
-    memoryCache = await caching('memory', { ttl: 1 * 24 * 60 * 60 * 1000 })
+function initMemoryCache() {
+    memoryCache = createCache({
+        max: 100,
+        ttl: 1 * 24 * 60 * 60 * 1000,
+    });
 }
 
 async function saveInCache({ key, value }) {

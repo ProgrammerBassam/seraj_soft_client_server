@@ -48,7 +48,7 @@ eventEmitter.on('runWhatsappCron', async () => {
         }
 
         isTaskRunning = true;
-        
+
         if (scheduledTask) {
             scheduledTask.start();
             logger.logInfo('بدء تشغيل فاحص رسائل الواتساب الفاشلة');

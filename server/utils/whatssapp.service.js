@@ -7,8 +7,17 @@ const fs = require('fs').promises;
 const path = require('path');
 const { app } = require('electron'); // Assuming you're using Electron
 
-const dataDirectory = path.join(app.getPath('userData'), 'myAppData');
-const whatsappFilePath = path.join(dataDirectory, 'session_auth_info');
+let dataDirectory;
+let whatsappFilePath;
+
+//app.whenReady().then(() => {
+//    dataDirectory = path.join(app.getPath('userData'), 'myAppData');
+//    whatsappFilePath = path.join(dataDirectory, 'session_auth_info');
+//});
+
+dataDirectory = path.join(app.getPath('userData'), 'myAppData');
+whatsappFilePath = path.join(dataDirectory, 'session_auth_info');
+
 
 let sock;
 let qrDinamic;
@@ -34,7 +43,7 @@ async function deleteSessionFolder() {
 async function connectToWhatsApp() {
     try {
         await ensureDirectoryExists(dataDirectory);
-        
+
         const { state, saveCreds } = await useMultiFileAuthState(whatsappFilePath);
         sock = makeWASocket({
             printQRInTerminal: false,
