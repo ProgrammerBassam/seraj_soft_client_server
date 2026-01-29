@@ -7,9 +7,9 @@ session_auth_info
 # Ignore all .exe files
 *.exe
 
+.env
+
 out/
 dist/
-
-.env
 
 build/
